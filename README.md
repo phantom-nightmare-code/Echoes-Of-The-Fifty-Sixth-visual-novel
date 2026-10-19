@@ -6,6 +6,8 @@ The game is written in Python, uses Tkinter for its interface, pygame for soundt
 
 The supplied `assets\The Maid of Light.mp3` soundtrack plays on loop in the Windows app. The **CREDITS** screen lists James Adrian B. Castro and thanks the supplied soundtrack. The **SOUNDBOARD** has eight generated sound effects; story cues also play automatically. Offline character voice-over can be switched on or off with **VOICE ON/OFF** or `Ctrl+V`. The exact voices depend on the voices installed on the player's Windows system.
 
+A prebuilt Windows app is available from the [latest GitHub release](https://github.com/phantom-nightmare-code/fifty-six-lives-visual-novel/releases/latest).
+
 The story has six title arcs and 29 selectable chapters. Chapters unlock as you play and unlocked chapters can be replayed. One chapter explores Mika's despair when she returns and discovers Mallory has asked Lira to serve as her new maid.
 
 ## Run from source
