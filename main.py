@@ -464,6 +464,12 @@ CHAPTERS = (
     Chapter("29", "The Fifty-Sixth Return", "ending_cycle", ARCS[5]),
 )
 CHAPTER_BY_SCENE = {chapter.scene_id: chapter for chapter in CHAPTERS}
+CHAPTER_MUSIC = {
+    chapter.scene_id: Path("assets")
+    / "chapter_music"
+    / f"chapter_{chapter.key}{'.mp3' if chapter.key == '01' else '.wav'}"
+    for chapter in CHAPTERS
+}
 SOUND_EFFECTS = (
     ("summon", "Summoning Rune"),
     ("pages", "Forbidden Pages"),
@@ -502,7 +508,7 @@ class BackgroundMusic:
             return
         self._pygame = pygame
         self._error = None
-        self._loaded = False
+        self._loaded_track: Path | None = None
 
     @property
     def available(self) -> bool:
@@ -512,19 +518,20 @@ class BackgroundMusic:
     def error(self) -> str | None:
         return self._error
 
-    def play(self) -> None:
+    def play(self, track: Path | None = None) -> None:
         if not self.available:
             raise OSError(self._error or "MP3 playback is unavailable.")
-        track = asset_path("assets", "The Maid of Light.mp3")
+        track = track or asset_path("assets", "The Maid of Light.mp3")
         if not track.is_file():
             raise FileNotFoundError(f"Soundtrack not found: {track}")
+        track = track.resolve()
         try:
             if not self._pygame.mixer.get_init():
-                self._pygame.mixer.init(frequency=Soundboard.SAMPLE_RATE, size=-16, channels=1)
-            if not self._loaded:
+                self._pygame.mixer.init(frequency=44100, size=-16, channels=2)
+            if self._loaded_track != track:
                 self._pygame.mixer.music.load(str(track))
                 self._pygame.mixer.music.play(-1)
-                self._loaded = True
+                self._loaded_track = track
             else:
                 self._pygame.mixer.music.unpause()
         except self._pygame.error as error:
@@ -832,6 +839,8 @@ class VisualNovel:
         self.flags = dict(state["flags"])  # type: ignore[arg-type]
         self.menu = bool(state["menu"])
         self.highest_chapter = int(state.get("highest_chapter", self.highest_chapter))
+        if self.music_enabled:
+            self._start_music()
         self.draw()
 
     def new_game(self) -> None:
@@ -855,6 +864,8 @@ class VisualNovel:
         self.menu = True
         self.voice.stop()
         self._last_spoken = None
+        if self.music_enabled:
+            self._start_music()
         self.draw()
 
     def show_credits(self) -> None:
@@ -863,6 +874,8 @@ class VisualNovel:
         self.chapter_select = False
         self.soundboard_visible = False
         self.voice.stop()
+        if self.music_enabled:
+            self._start_music()
         self.draw()
 
     def show_chapter_select(self) -> None:
@@ -871,6 +884,8 @@ class VisualNovel:
         self.chapter_select = True
         self.soundboard_visible = False
         self.voice.stop()
+        if self.music_enabled:
+            self._start_music()
         self.draw()
 
     def show_soundboard(self) -> None:
@@ -879,6 +894,8 @@ class VisualNovel:
         self.chapter_select = False
         self.soundboard_visible = True
         self.voice.stop()
+        if self.music_enabled:
+            self._start_music()
         self.draw()
 
     def choose_chapter(self, index: int) -> None:
@@ -896,7 +913,8 @@ class VisualNovel:
 
     def _start_music(self) -> None:
         try:
-            self.music.play()
+            track = CHAPTER_MUSIC.get(self.current_scene) if not self.menu and self.current_scene else None
+            self.music.play(asset_path(*track.parts) if track is not None else None)
         except (OSError, FileNotFoundError) as error:
             self.music_enabled = False
             self.music_error = str(error)
@@ -939,6 +957,8 @@ class VisualNovel:
         self.draw()
 
     def play_scene_sfx(self, scene_id: str) -> None:
+        if not self.menu and scene_id in CHAPTER_MUSIC and self.music_enabled:
+            self._start_music()
         if not self.sfx_enabled:
             return
         cue = {
@@ -1108,6 +1128,8 @@ class VisualNovel:
         elif scene.ending:
             self.menu = True
             self._last_spoken = None
+            if self.music_enabled:
+                self._start_music()
         self.draw()
 
     def choose(self, index: int) -> None:
@@ -1651,8 +1673,8 @@ class VisualNovel:
                 }
                 self.canvas.create_text(x + button_width / 2, y + 65, text=descriptions[key], fill="#c5c0bd", font=("Segoe UI", 9))
             self.canvas.create_text(width / 2, height - 83, text=f"Sound effects: {'ON' if self.sfx_enabled else 'OFF'}  •  Music: {'ON' if self.music_enabled else 'OFF'}  •  Voice-over: {'ON' if self.voice_enabled else 'OFF'}", fill="#c5c0bd", font=("Segoe UI", 10))
-            if self.soundboard.error or self.voice_error:
-                error_text = self.soundboard.error or self.voice_error or ""
+            if self.music_error or self.soundboard.error or self.voice_error:
+                error_text = self.music_error or self.soundboard.error or self.voice_error or ""
                 self.canvas.create_text(width / 2, height - 62, text=error_text, fill="#efad9a", font=("Segoe UI", 8), width=width - 40)
             self._button(width / 2 - 105, height - 43, 210, 30, "BACK TO TITLE", "menu_back", 9)
             self._button(width - 163, 14, 135, 34, "SOUND ON" if self.music_enabled else "SOUND OFF", "menu_sound", 9)

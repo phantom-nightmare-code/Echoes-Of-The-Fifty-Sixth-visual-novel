@@ -4,7 +4,7 @@ A small, self-contained visual novel adaptation of the story supplied as a PDF. 
 
 The game is written in Python, uses Tkinter for its interface, pygame for soundtrack and sound effects, and pyttsx3 for optional offline dialogue voice-over. The supplied illustration is not copied into the game: it informs the original character and scenery designs. The title screen is a Mika Amanogawa cover page, with an original anime-inspired portrait in a code-drawn castle garden; her sprites blink and gently bob during play. Story locations include the garden fountain, throne room, archive, goblin farm, and moonlit palace. Character dialogue uses locally installed computer voices, with voices selected by character where possible and distinct speaking rates. The exact available voices depend on the player's system.
 
-The original `assets\The Maid of Light.mp3` soundtrack and lyrics were created by James Adrian B. Castro and play on loop in the Windows app. The **CREDITS** screen credits him for the original soundtrack and lyrics. The **SOUNDBOARD** has eight generated sound effects; story cues also play automatically. Offline character voice-over can be switched on or off with **VOICE ON/OFF** or `Ctrl+V`. The exact voices depend on the voices installed on the player's Windows system.
+The original `assets\The Maid of Light.mp3` soundtrack and lyrics were created by James Adrian B. Castro and play on loop in the title screen. The **CREDITS** screen credits him for the original soundtrack and lyrics. Each numbered chapter has its own soundtrack in `assets\chapter_music`; its track loops during that chapter, and the title music resumes when you return to the menu. The eight soundboard effects also play automatically as story cues. Offline character voice-over can be switched on or off with **VOICE ON/OFF** or `Ctrl+V`. The exact voices depend on the voices installed on the player's Windows system.
 
 A prebuilt Windows app is available from the [latest GitHub release](https://github.com/phantom-nightmare-code/fifty-six-lives-visual-novel/releases/latest).
 
@@ -31,7 +31,7 @@ On Windows, offline speech uses installed SAPI voices. If compatible speech voic
 
 1. Install Python 3.10 or newer.
 2. Double-click `build_windows.bat`, or run it from PowerShell.
-3. When it finishes, share `dist\FiftySixLives.exe`. The soundtrack is bundled into the executable; characters and original scenery are drawn by the game. The recipient does not need Python installed or a separate assets folder.
+3. When it finishes, share `dist\FiftySixLives.exe`. The title soundtrack and all 29 chapter tracks are bundled into the executable; characters and original scenery are drawn by the game. The recipient does not need Python installed or a separate assets folder. The original-quality WAV chapter tracks make the executable approximately 600 MB larger than the earlier release.
 
 The first build needs an internet connection to install PyInstaller. For a distributable release, zip the `.exe` and include this README. Windows SmartScreen may show a warning for an unsigned app; code signing is optional and requires a certificate.
 
