@@ -73,11 +73,11 @@ STORY: dict[str, Scene] = {
     "summoning": Scene(
         "The Summoning", "throne", ("Mallory", "Mika"),
         (
-            Line("Narration", "The grand hall of Vallhelm is suffocatingly silent, save for the crackling hum of the summoning circle etched into the marble floor."),
-            Line("Narration", "A flash of blinding, golden light erupts from the center of the runes. The shockwave knocks the mages off their feet. When the smoke clears, the court gasps."),
-            Line("Narration", "Instead of a towering, armored warrior, a young woman stands in the center of the circle. She is wearing a simple, black-and-white maid's uniform."),
-            Line("Mika", "Whoa! What the—? Where am I? This is definitely not the hotel hallway I was just cleaning."),
-            Line("King Galvath", "A servant! The prophecy promised a champion, and the heavens send us a scullery maid! This is a mockery!"),
+            Line("Narration", "The grand hall of Vallhelm is suffocatingly silent, save for the crackling hum of the ancient summoning circle etched into the marble floor. The Demon Lord's armies are a day's march away, and the kingdom's last hope rests on a forbidden, desperate ritual."),
+            Line("Narration", "A flash of blinding, golden light erupts from the center of the runes. The shockwave knocks the royal mages off their feet. When the smoke clears, the entire court gasps in unison."),
+            Line("Narration", "Instead of a towering, armored warrior, a young woman stands in the center of the circle. She is wearing a simple, black-and-white maid's uniform, holding a feather duster like a sword."),
+            Line("Mika", "Whoa! What the—? Where am I? This is definitely not the hotel hallway I was just cleaning. Why is everyone staring at me like I just grew a second head?"),
+            Line("King Galvath", "A servant! The prophecy promised a champion to save us from the abyss, and the heavens send us a scullery maid with a duster! This is a mockery of everything we stand for!"),
         ),
         (
             Choice(
@@ -85,9 +85,9 @@ STORY: dict[str, Scene] = {
                 next_scene="first_impression", 
                 effects={"bond": 1, "reputation": 1},
                 outcome_lines=(
-                    Line("Mallory", "Father, please! Silence! The circle responded to her. The magic recognized her soul."),
-                    Line("Mika", "Thanks for the save. I'm Mika, by the way. Nice to meet someone here who isn't yelling at me."),
-                    Line("Mallory", "I am Mallory. And I have a feeling we are going to need each other."),
+                    Line("Mallory", "Father, please! Silence! The circle responded to her. The magic recognized her soul. We cannot dismiss her just because she doesn't look like a knight."),
+                    Line("Mika", "Thanks for the save. I'm Mika, by the way. Nice to meet someone here who isn't immediately yelling at me."),
+                    Line("Mallory", "I am Mallory. And I have a feeling we are going to need each other if we are going to survive this."),
                 )
             ),
             Choice(
@@ -95,9 +95,9 @@ STORY: dict[str, Scene] = {
                 next_scene="first_impression", 
                 effects={"resolve": 1, "reputation": -1},
                 outcome_lines=(
-                    Line("Mika", "I can hear you, you know. I'm standing right here. And for the record, I've handled worse messes than a few angry soldiers."),
-                    Line("Narration", "The court gasps at her defiance. The King's face turns crimson with rage."),
-                    Line("Mallory", "Silence! The circle responded to her. We cannot dismiss her just because she doesn't look like a knight."),
+                    Line("Mika", "I can hear you, you know. I'm standing right here. And for the record, I've handled worse messes than a few angry soldiers. Have you ever cleaned up after a royal banquet?"),
+                    Line("Narration", "The court gasps at her defiance. The King's face turns crimson with rage, and the guards tighten their grip on their weapons."),
+                    Line("Mallory", "Silence! The circle responded to her. We cannot dismiss her just because she doesn't look like a knight. Stand down!"),
                 )
             ),
         ),
@@ -105,9 +105,9 @@ STORY: dict[str, Scene] = {
     "first_impression": Scene(
         "The Wrong Hero", "throne", ("King Galvath", "Mallory", "Mika"),
         (
-            Line("Narration", "The court's disappointment sharpens into suspicion. A seasoned captain of the guard steps forward, pointing his spear at Mika."),
-            Line("King Galvath", "If the ritual brought a servant, then it has failed us. We need a champion who can wield a blade."),
-            Line("Mika", "I'm right here, you know. I have a name. It's Mika."),
+            Line("Narration", "The court's disappointment sharpens into suspicion. A seasoned captain of the guard steps forward, pointing his spear directly at Mika's untouched sleeves."),
+            Line("King Galvath", "If the ritual brought a servant, then it has failed us. We need a champion who can wield a blade, not someone to dust the throne room while the kingdom burns."),
+            Line("Mika", "I'm right here, you know. I have a name. It's Mika. And honestly, I'm just as confused as you are."),
         ),
         (
             Choice(
@@ -115,9 +115,9 @@ STORY: dict[str, Scene] = {
                 next_scene="coffee", 
                 effects={"bond": 1, "reputation": 1},
                 outcome_lines=(
-                    Line("Mika", "Look, I don't know how I got here, but I'm not your enemy. I just want to go home."),
-                    Line("Narration", "The King hesitates, his expression softening slightly at her calm tone."),
-                    Line("Mallory", "Let us speak in the gardens, away from this hostility."),
+                    Line("Mika", "Look, I don't know how I got here, but I'm not your enemy. I was just doing my job, and now I'm here. I just want to go home."),
+                    Line("Narration", "The King hesitates, his expression softening slightly at her calm, rational tone."),
+                    Line("Mallory", "Let us speak in the gardens, away from this hostility. Please, follow me."),
                 )
             ),
             Choice(
@@ -135,9 +135,9 @@ STORY: dict[str, Scene] = {
     "coffee": Scene(
         "A Cup Before the Storm", "garden", ("Mallory", "Mika"),
         (
-            Line("Narration", "Mallory walks Mika out of the echoing throne room and into the quiet, sprawling palace gardens."),
-            Line("Narration", "They sit on a stone bench near a gently bubbling fountain. The distant sound of the panicked court fades away."),
-            Line("Mallory", "I apologize for my father. He is terrified. We all are. But I am not ready to give up on you yet."),
+            Line("Narration", "Mallory walks Mika out of the echoing throne room and into the quiet, sprawling palace gardens. The night air is cool and carries the sweet scent of night-blooming jasmine."),
+            Line("Narration", "They sit on a stone bench near a gently bubbling fountain. The distant sound of the panicked court fades away, replaced by the chirping of crickets."),
+            Line("Mallory", "I apologize for my father. He is terrified. We all are. The Demon Lord's shadow looms over us, and we are desperate. But I am not ready to give up on you yet."),
         ),
         (
             Choice(
@@ -145,8 +145,8 @@ STORY: dict[str, Scene] = {
                 next_scene="market", 
                 effects={"bond": 1, "reputation": 1},
                 outcome_lines=(
-                    Line("Mika", "It's okay. I'm used to people underestimating me. Let me see what I can do to help."),
-                    Line("Mallory", "You are a rare soul, Mika."),
+                    Line("Mika", "It's okay. I'm used to people underestimating me. Let me see what I can do to help. I might not be a knight, but I'm a fast learner."),
+                    Line("Mallory", "You are a rare soul, Mika. Thank you."),
                 )
             ),
             Choice(
@@ -154,7 +154,7 @@ STORY: dict[str, Scene] = {
                 next_scene="market", 
                 effects={"resolve": 1, "reputation": -1},
                 outcome_lines=(
-                    Line("Mika", "I don't care about your war. I want to go home. Now."),
+                    Line("Mika", "I don't care about your war or your prophecies. I want to go home. Now. Find a way to send me back."),
                     Line("Mallory", "I... I don't know how to send you back. The ritual only works one way."),
                     Line("Mika", "Then find a way. Or I'll find it myself."),
                 )
@@ -164,9 +164,9 @@ STORY: dict[str, Scene] = {
     "market": Scene(
         "The City Market", "garden", ("Mallory", "Mika"),
         (
-            Line("Narration", "Before the sun rises, Mallory disguises herself in a heavy cloak and takes Mika into the lower city."),
-            Line("Mika", "The people are scared. I used to clean rooms for people who never looked me in the eye."),
-            Line("Narration", "A small child bumps into Mika, dropping a basket of apples. The fruit scatters."),
+            Line("Narration", "Before the sun rises, Mallory disguises herself in a heavy cloak and takes Mika into the lower city. The streets are damp with morning fog, and the market is bustling, but a thick layer of fear hangs in the air."),
+            Line("Mika", "The people are scared. I used to clean rooms for people who never looked me in the eye. It's strange, being the one everyone is staring at now."),
+            Line("Narration", "A small child, distracted by the commotion, bumps into Mika, dropping a woven basket of apples. The fruit scatters across the muddy cobblestones."),
         ),
         (
             Choice(
@@ -174,8 +174,8 @@ STORY: dict[str, Scene] = {
                 next_scene="knight_mistake", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Here you go, little one. Be careful."), 
-                    Line("Mallory", "You have a gentle heart."),
+                    Line("Mika", "Oh! Careful there, little one. Let me help you. Don't want these delicious apples getting bruised."), 
+                    Line("Mallory", "You care for them already. You have a gentle heart, Mika."),
                 )
             ),
             Choice(
@@ -183,8 +183,8 @@ STORY: dict[str, Scene] = {
                 next_scene="knight_mistake", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Watch where you're going."), 
-                    Line("Mallory", "That was cold, Mika."),
+                    Line("Mika", "Watch where you're going. I don't have time for this."), 
+                    Line("Mallory", "That was cold, Mika. These are my people."),
                 )
             ),
         ),
@@ -192,9 +192,9 @@ STORY: dict[str, Scene] = {
     "knight_mistake": Scene(
         "The Knight's Mistake", "throne", ("Mika", "Mallory", "Lira"),
         (
-            Line("Narration", "Back at the palace, a frightened young guard lunges at Mika with a spear."),
-            Line("Narration", "Mika pivots, sidesteps the thrust, and snaps the spear in two with her bare hands."),
-            Line("Lira", "Enough! Stand down, soldier! She could have broken your arm."),
+            Line("Narration", "Back at the palace, tensions boil over. A frightened, young guard, believing Mika's intervention at the market was demonic manipulation, lunges at her with a spear."),
+            Line("Narration", "Mika doesn't flinch. She pivots on her heel, sidestepping the thrust by a hair's breadth, grabs the wooden shaft of the spear, and snaps it in two with a sharp twist of her wrist."),
+            Line("Lira", "Enough! Stand down, soldier! Stand down! She could have broken your arm. Instead, she disarmed you without drawing a drop of blood."),
         ),
         (
             Choice(
@@ -202,8 +202,8 @@ STORY: dict[str, Scene] = {
                 next_scene="archive", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I know what fear makes people do. It's okay."), 
-                    Line("Lira", "You have my respect."),
+                    Line("Mika", "I know what fear makes people do. It's okay. Let's just make sure it doesn't happen again."), 
+                    Line("Lira", "You have my respect, Maid. I am Lira, Captain of the Royal Guard."),
                 )
             ),
             Choice(
@@ -211,8 +211,8 @@ STORY: dict[str, Scene] = {
                 next_scene="archive", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "If he tries that again, I won't be so gentle."), 
-                    Line("Lira", "Watch your tongue, Maid."),
+                    Line("Mika", "If he tries that again, I won't be so gentle. Tell your men to stay out of my way."), 
+                    Line("Lira", "Watch your tongue, Maid. You are not in charge here."),
                 )
             ),
         ),
@@ -220,9 +220,10 @@ STORY: dict[str, Scene] = {
     "archive": Scene(
         "The Ancient Record", "archive", ("King Galvath", "Mallory", "Mika"),
         (
-            Line("Narration", "King Galvath opens a massive, ancient tome bound in dragon leather."),
-            Line("King Galvath", "This book names you, Mika. It describes fifty-five lives before this one."),
-            Line("Mika", "Fifty-five lives? You mean I've done this before?"),
+            Line("Narration", "King Galvath, humbled but still suspicious, summons the three women to the restricted section of the royal archives. The room smells of old paper, ozone, and dust."),
+            Line("Narration", "He opens a massive, ancient tome bound in dragon leather. The pages glow with a faint, ethereal light."),
+            Line("King Galvath", "This book names you, Mika. It describes fifty-five lives before this one. Each time, your memories were wiped clean. You are a cosmic pawn."),
+            Line("Mika", "Fifty-five lives? You mean I've done this before? I've died before? Fifty-five times?"),
         ),
         (
             Choice(
@@ -230,8 +231,8 @@ STORY: dict[str, Scene] = {
                 next_scene="training", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Then let this life belong to me. I will help you."), 
-                    Line("Mallory", "Thank you, Mika."),
+                    Line("Mika", "Then let this life belong to me. I will help you, but I choose what home means. No more wiping my memories."), 
+                    Line("Mallory", "Thank you, Mika. We will stand by you."),
                 )
             ),
             Choice(
@@ -239,8 +240,8 @@ STORY: dict[str, Scene] = {
                 next_scene="training", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "I am not a pawn. I won't be your sacrifice."), 
-                    Line("Mallory", "Please, Mika. We need you."),
+                    Line("Mika", "I am not a pawn. I won't be your sacrifice. Find someone else to do your dirty work."), 
+                    Line("Mallory", "Please, Mika. We need you. The whole world needs you."),
                 )
             ),
         ),
@@ -248,9 +249,9 @@ STORY: dict[str, Scene] = {
     "training": Scene(
         "Sparring with Lira", "throne", ("Mika", "Lira"), 
         (
-            Line("Narration", "Lira swings her sword, but Mika holds her ground."), 
-            Line("Lira", "Your footwork is sloppy!"), 
-            Line("Mika", "A mop can be dangerous too!"),
+            Line("Narration", "The training yard is filled with the harsh clang of steel. Lira is a whirlwind of precision and grace, her sword cutting through the air. Mika, however, is struggling to adjust to the weight of a real blade."), 
+            Line("Lira", "Your strength is incredible, Mika, but your footwork is sloppy! You fight like you're holding a mop!"), 
+            Line("Mika", "A mop can be pretty dangerous if you know how to swing it! I once fought off a drunk noble with a bucket of soapy water!"),
         ), 
         (
             Choice(
@@ -258,8 +259,9 @@ STORY: dict[str, Scene] = {
                 next_scene="garden", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Good match."), 
-                    Line("Lira", "You are full of surprises."),
+                    Line("Narration", "Lira laughs, a genuine, warm sound. She lunges again, but Mika anticipates it. She sweeps Lira's leg with the flat of her blade, knocking the captain into the dirt."), 
+                    Line("Mika", "Good match, Captain."), 
+                    Line("Lira", "You are full of surprises, Maid. Perhaps you really are the hero the prophecy spoke of."),
                 )
             ), 
             Choice(
@@ -267,8 +269,9 @@ STORY: dict[str, Scene] = {
                 next_scene="garden", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Not so tough now, are you?"), 
-                    Line("Lira", "Don't push your luck."),
+                    Line("Narration", "Mika disarms Lira with a swift strike, sending her sword clattering to the ground."), 
+                    Line("Mika", "Not so tough now, are you, Captain?"), 
+                    Line("Lira", "Don't push your luck, Maid. I was going easy on you."),
                 )
             ),
         )
@@ -276,9 +279,9 @@ STORY: dict[str, Scene] = {
     "garden": Scene(
         "A Quiet Afternoon", "garden", ("Mallory", "Mika"), 
         (
-            Line("Narration", "Days pass. Mallory leads Mika to a hidden garden."), 
-            Line("Mallory", "This was my mother's favorite place."), 
-            Line("Mika", "It's beautiful."),
+            Line("Narration", "Days pass in relative peace, a calm before the inevitable storm. Mallory leads Mika to a hidden garden behind the palace walls, overgrown with wild roses and ivy."), 
+            Line("Mallory", "The palace garden is peaceful. No one will bother you here. This was my mother's favorite place."), 
+            Line("Mika", "It's beautiful. A quiet place, a warm drink, and no urgent prophecy. I could get used to this."),
         ), 
         (
             Choice(
@@ -286,8 +289,9 @@ STORY: dict[str, Scene] = {
                 next_scene="goblin_warning", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I used to think my life was boring. Now I miss it."), 
-                    Line("Mallory", "You make this place feel like home too."),
+                    Line("Narration", "Mika smiles softly, the first genuine smile she has shown since arriving. They spend hours talking about her world, her small apartment, her love of cleaning, and the peaceful, mundane life she left behind."), 
+                    Line("Mika", "I used to think my life was boring. Just waking up, going to work, coming home. But now... I'd give anything for one boring Tuesday."), 
+                    Line("Mallory", "You make this place feel like home too, Mika."),
                 )
             ), 
             Choice(
@@ -295,8 +299,9 @@ STORY: dict[str, Scene] = {
                 next_scene="goblin_warning", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "I'm not here to make friends."), 
-                    Line("Mallory", "I see."),
+                    Line("Narration", "Mika stares at the roses, refusing to meet Mallory's eyes."), 
+                    Line("Mika", "I'm not here to make friends, Mallory. I'm here because I have to be."), 
+                    Line("Mallory", "I see. I'm sorry for prying."),
                 )
             ),
         )
@@ -304,9 +309,9 @@ STORY: dict[str, Scene] = {
     "goblin_warning": Scene(
         "Tracks at the Orchard", "farm", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "The orchard fence is cut from the inside."), 
-            Line("Mika", "Someone wants us to blame the goblins."), 
-            Line("Lira", "We should report this."),
+            Line("Narration", "The royal orchard on the outskirts of the city is in ruins. The wooden fence is cut from the inside. Wet footprints lead toward the goblin road, but none lead back."), 
+            Line("Mika", "This wasn't an attack from the outside. Look at the cut. Someone from the city cut this from the inside and dragged the scouts out."), 
+            Line("Lira", "We should report this to the King immediately. This is high treason."),
         ), 
         (
             Choice(
@@ -314,8 +319,8 @@ STORY: dict[str, Scene] = {
                 next_scene="raid", 
                 effects={"peace": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "We need evidence."), 
-                    Line("Mallory", "Agreed."),
+                    Line("Mika", "If we report this, the King will just send an army. Then the real traitor wins. We need to find out who benefits before we call anyone an enemy. We need evidence."), 
+                    Line("Mallory", "Agreed. We do this your way, Mika."),
                 )
             ), 
             Choice(
@@ -323,8 +328,8 @@ STORY: dict[str, Scene] = {
                 next_scene="raid", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Let the army handle it."), 
-                    Line("Lira", "As you wish."),
+                    Line("Mika", "Let the army handle it. That's what they're paid for, right?"), 
+                    Line("Lira", "As you wish. I will inform His Majesty immediately."),
                 )
             ),
         )
@@ -332,9 +337,9 @@ STORY: dict[str, Scene] = {
     "raid": Scene(
         "The Goblin Raid", "farm", ("Mika", "Gorthak", "Mallory"), 
         (
-            Line("Narration", "Goblins storm the countryside."), 
-            Line("Gorthak", "Our village is starving!"), 
-            Line("Mallory", "What do we do?"),
+            Line("Narration", "A goblin band storms the countryside, setting fire to the wheat fields. Mika shields Mallory, raising her broken spear to fight. But as the smoke clears, she notices the raiders are not warriors, but refugees."), 
+            Line("Gorthak", "Our village has nothing left! The blight took our crops, and the king's soldiers poisoned our wells! We came for food, not a war with your people!"), 
+            Line("Mallory", "Mika, what should we do? If we attack, we prove we're monsters. If we don't, they'll take everything."),
         ), 
         (
             Choice(
@@ -342,8 +347,10 @@ STORY: dict[str, Scene] = {
                 next_scene="treaty", 
                 effects={"peace": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Put down your weapons."), 
-                    Line("Gorthak", "You are strange."),
+                    Line("Narration", "Mika drops her weapon to the mud. The silence that follows is deafening. Gorthak stares at her, bewildered by her courage."), 
+                    Line("Mika", "Put down your weapons. All of you. We can settle this without bloodshed."), 
+                    Line("Gorthak", "Why should we trust you? You are human."), 
+                    Line("Mika", "Because I'm the only one here who has seen enough death. Fifty-five lifetimes of it. I'm not looking for more."),
                 )
             ), 
             Choice(
@@ -351,8 +358,9 @@ STORY: dict[str, Scene] = {
                 next_scene="treaty", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Drive them back!"), 
-                    Line("Gorthak", "We will remember this!"),
+                    Line("Narration", "Mika charges forward, her broken spear flashing in the firelight. The goblins scatter, terrified by her ferocity."), 
+                    Line("Mika", "Drive them back! Show them what happens when they threaten Vallhelm!"), 
+                    Line("Gorthak", "We will remember this, human! We will remember!"),
                 )
             ),
         )
@@ -360,9 +368,9 @@ STORY: dict[str, Scene] = {
     "treaty": Scene(
         "A Language of Understanding", "throne", ("Gorthak", "Mika", "Mallory"), 
         (
-            Line("Narration", "Mika forces both sides to negotiate."), 
-            Line("Gorthak", "Give us a chance."), 
-            Line("King Galvath", "Ally with goblins?"),
+            Line("Narration", "Once the danger passes, Mika forces both sides to sit at the negotiating table. The tension in the throne room is thick enough to cut with a knife."), 
+            Line("Gorthak", "Give our people a fair chance, and we will stand between Vallhelm and its enemies. We are warriors, not thieves."), 
+            Line("King Galvath", "You expect me to ally with goblins? They have raided our lands for generations! My father died fighting them!"),
         ), 
         (
             Choice(
@@ -370,8 +378,9 @@ STORY: dict[str, Scene] = {
                 next_scene="goblin_home", 
                 effects={"peace": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "We need them."), 
-                    Line("Gorthak", "You speak like an angel."),
+                    Line("Mika", "And you expect me to fight for a kingdom that would let children starve over a grudge? A treaty is only worth something if we keep choosing to honor it."), 
+                    Line("Mallory", "Mika is right, Father. The real enemy is at our borders. We need Gorthak's army."), 
+                    Line("Gorthak", "You are a strange human, Mika. You fight like a demon, but you speak like an angel."),
                 )
             ), 
             Choice(
@@ -379,8 +388,9 @@ STORY: dict[str, Scene] = {
                 next_scene="goblin_home", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Only a truce."), 
-                    Line("Gorthak", "Cautious."),
+                    Line("Mika", "I'm not saying we hold hands and sing songs. I'm saying we accept a temporary truce until the Demon Lord is defeated."), 
+                    Line("King Galvath", "A temporary measure. Nothing more. Do not expect me to break bread with them."), 
+                    Line("Gorthak", "Cautious. But acceptable."),
                 )
             ),
         )
@@ -388,9 +398,9 @@ STORY: dict[str, Scene] = {
     "goblin_home": Scene(
         "A Village at the Edge", "farm", ("Gorthak", "Mika", "Mallory"), 
         (
-            Line("Narration", "Mika visits the goblin village."), 
-            Line("Gorthak", "We were desperate."), 
-            Line("Mika", "Someone poisoned your wells."),
+            Line("Narration", "Mika follows Gorthak to Crag-Vale, a goblin village nestled in the jagged mountains. It is a ruin of empty granaries, poisoned wells, and crying children. The smell of rot is overwhelming."), 
+            Line("Gorthak", "We did not raid your farms until the blight took ours. We were desperate. We are dying."), 
+            Line("Mika", "Then we have been fighting over the same wound. Someone poisoned your wells, cut our fences, and killed our scouts. They wanted this war."),
         ), 
         (
             Choice(
@@ -398,8 +408,9 @@ STORY: dict[str, Scene] = {
                 next_scene="shadow", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "We'll fix this."), 
-                    Line("Gorthak", "Thank you."),
+                    Line("Narration", "A sudden whistle cuts through the air. An arrow strikes the ground between them, vibrating with force. Its shaft bears the king's seal."), 
+                    Line("Mika", "Look at the shaft. It bears the king's seal. But he wouldn't... this is a forgery. We'll fix this, Gorthak. I promise."), 
+                    Line("Gorthak", "Thank you, Mika. You are different from the others."),
                 )
             ), 
             Choice(
@@ -407,8 +418,9 @@ STORY: dict[str, Scene] = {
                 next_scene="shadow", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Who did this?"), 
-                    Line("Gorthak", "We don't know!"),
+                    Line("Narration", "A sudden whistle cuts through the air. An arrow strikes the ground between them, vibrating with force."), 
+                    Line("Mika", "Who did this? Who poisoned your wells? Tell me what you know!"), 
+                    Line("Gorthak", "We don't know! We are not your enemy, but you are making it very hard to remember that!"),
                 )
             ),
         )
@@ -416,9 +428,9 @@ STORY: dict[str, Scene] = {
     "shadow": Scene(
         "The Demon Lord's Shadow", "battle", ("Mika", "Mallory", "Gorthak"), 
         (
-            Line("Narration", "The Demon Lord's army gathers."), 
-            Line("Mallory", "We are with you."), 
-            Line("Mika", "Let's end this."),
+            Line("Narration", "The Demon Lord's forces gather at the border. A massive army of dark knights, wraiths, and fire-breathing beasts stretches across the horizon, blotting out the sun."), 
+            Line("Narration", "Knights, mages, and goblins stand shoulder to shoulder, preparing to defend Vallhelm together. The air smells of ozone, ash, and fear."), 
+            Line("Mallory", "You do not have to face the whole army by yourself. We are with you. Vallhelm is with you."),
         ), 
         (
             Choice(
@@ -426,8 +438,8 @@ STORY: dict[str, Scene] = {
                 next_scene="war_council", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "We fight as one."), 
-                    Line("Gorthak", "For Vallhelm!"),
+                    Line("Mika", "I know. I just need to remember that when the fighting starts. Fear makes people do terrible things. But it can also make them brave."), 
+                    Line("Gorthak", "My people will hold the left flank. Show them the strength of a champion, Maid. We fight as one!"),
                 )
             ), 
             Choice(
@@ -435,8 +447,8 @@ STORY: dict[str, Scene] = {
                 next_scene="war_council", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "I'll handle this."), 
-                    Line("Mallory", "Be careful."),
+                    Line("Mika", "I can handle this. I've done it before. Just make sure the civilians are safe."), 
+                    Line("Mallory", "Be careful, Mika. Please. Don't do anything reckless."),
                 )
             ),
         )
@@ -444,9 +456,9 @@ STORY: dict[str, Scene] = {
     "war_council": Scene(
         "The Empty Place at Council", "throne", ("King Galvath", "Mallory", "Mika", "Gorthak"), 
         (
-            Line("Narration", "Maps covered in ash."), 
-            Line("King Galvath", "It's a trap."), 
-            Line("Mallory", "We fight together."),
+            Line("Narration", "Before the war council can agree on a plan, the king's maps are found covered in black ash. Every road leads to the same ruined valley, a death trap."), 
+            Line("King Galvath", "The enemy is steering us toward the north. It's a trap. We have no choice but to spring it."), 
+            Line("Mallory", "Then we choose the ground together. Mika is not a weapon we point at it. We fight as one, or we don't fight at all."),
         ), 
         (
             Choice(
@@ -454,8 +466,8 @@ STORY: dict[str, Scene] = {
                 next_scene="sacrifice", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "We use the terrain."), 
-                    Line("Mallory", "Smart."),
+                    Line("Mika", "If we're walking into a trap, we make sure we spring it on our terms. We use the valley's terrain to our advantage."), 
+                    Line("Mallory", "Smart. We'll coordinate the mages to provide cover."),
                 )
             ), 
             Choice(
@@ -463,8 +475,8 @@ STORY: dict[str, Scene] = {
                 next_scene="sacrifice", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "We attack now."), 
-                    Line("King Galvath", "Reckless!"),
+                    Line("Mika", "We attack now. We don't give them time to fortify their positions."), 
+                    Line("King Galvath", "Reckless! You will get us all killed!"),
                 )
             ),
         )
@@ -472,9 +484,9 @@ STORY: dict[str, Scene] = {
     "sacrifice": Scene(
         "The Cost of Victory", "battle", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "The battle is brutal."), 
-            Line("Mika", "Get behind me!"), 
-            Line("Narration", "Mika collapses."),
+            Line("Narration", "The battle is brutal. The valley runs red. The allied forces are pushed to the brink, but they hold the line. The battle breaks the enemy's advance, but at a terrible cost."), 
+            Line("Narration", "Mika spends everything she has to keep Mallory and the defenders alive. She channels the raw, unrefined magic of the summoning circle."), 
+            Line("Mika", "Mallory! Get behind me!"),
         ), 
         (
             Choice(
@@ -482,8 +494,9 @@ STORY: dict[str, Scene] = {
                 next_scene="grief", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mallory", "Stay with us!"), 
-                    Line("Narration", "Mika fades."),
+                    Line("Narration", "A blinding flash of light erupts from Mika's body, consuming the remaining shadow beasts. The blast levels the valley. When the light fades, Mika collapses into the mud."), 
+                    Line("Mallory", "Mika! Stay with us. Please. Don't close your eyes! I can't lose you!"), 
+                    Line("Narration", "The light fades from Mika's eyes. She smiles softly, knowing she saved them."),
                 )
             ), 
             Choice(
@@ -491,8 +504,9 @@ STORY: dict[str, Scene] = {
                 next_scene="grief", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "I'm sorry..."), 
-                    Line("Narration", "She is gone."),
+                    Line("Narration", "Mika lets out a final, exhausted sigh, closing her eyes as the magic consumes her."), 
+                    Line("Mika", "I'm sorry... I couldn't hold on..."), 
+                    Line("Narration", "She is gone. The cycle has claimed another life."),
                 )
             ),
         )
@@ -500,9 +514,9 @@ STORY: dict[str, Scene] = {
     "grief": Scene(
         "After the Battle", "infirmary", ("Mallory", "Lira"), 
         (
-            Line("Narration", "Vallhelm mourns."), 
-            Line("Lira", "You must eat."), 
-            Line("Mallory", "I failed her."),
+            Line("Narration", "Vallhelm mourns. The kingdom is saved, but the champion is gone. The capital is draped in black banners."), 
+            Line("Lira", "You should not have to hold all this grief alone, Your Highness. You haven't left her side in days. You need to eat."), 
+            Line("Mallory", "I promised her she wouldn't be alone. I failed her. I couldn't protect her. She died for us."),
         ), 
         (
             Choice(
@@ -510,8 +524,8 @@ STORY: dict[str, Scene] = {
                 next_scene="lira_maid", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Lira", "I'm here."), 
-                    Line("Mallory", "Thank you."),
+                    Line("Lira", "She protected us. And she would want you to keep living. She wouldn't want you to waste away in this room. Let me help you."), 
+                    Line("Mallory", "Then stay beside me. And when Mika comes home, we will tell her together."),
                 )
             ), 
             Choice(
@@ -519,8 +533,8 @@ STORY: dict[str, Scene] = {
                 next_scene="lira_maid", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Lira", "As you wish."), 
-                    Line("Mallory", "..."),
+                    Line("Lira", "As you wish, Your Highness. I will be outside if you need me."), 
+                    Line("Mallory", "...")
                 )
             ),
         )
@@ -528,9 +542,9 @@ STORY: dict[str, Scene] = {
     "lira_maid": Scene(
         "The New Maid", "infirmary", ("Mallory", "Lira"), 
         (
-            Line("Narration", "Lira becomes the maid."), 
-            Line("Mallory", "It's not a replacement."), 
-            Line("Lira", "I understand."),
+            Line("Narration", "Grief makes the days blur. To keep the palace running and to keep Mallory from drowning in sorrow, Lira asks to serve as her personal maid until Mika can return."), 
+            Line("Mallory", "It is not a replacement. I need help, and I trust you. You are my anchor in this storm."), 
+            Line("Lira", "I will wear the apron, Your Highness. But I will never pretend to be Mika. She is one of a kind."),
         ), 
         (
             Choice(
@@ -538,8 +552,9 @@ STORY: dict[str, Scene] = {
                 next_scene="return", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Lira", "I'll do my best."), 
-                    Line("Mallory", "I know."),
+                    Line("Narration", "Mallory laughs for the first time in weeks, though it is tinged with sadness. She pins Mika's pale ribbon beside the appointment order."), 
+                    Line("Mallory", "I know. She would be furious if we replaced her. She'd probably throw a bucket of soapy water at us."), 
+                    Line("Lira", "I'll do my best to keep your spirits up."),
                 )
             ), 
             Choice(
@@ -547,8 +562,8 @@ STORY: dict[str, Scene] = {
                 next_scene="return", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mallory", "It hurts."), 
-                    Line("Lira", "I'm sorry."),
+                    Line("Mallory", "It hurts, Lira. Every time I see you in that apron, it hurts."), 
+                    Line("Lira", "I'm sorry, Your Highness. I never meant to cause you pain."),
                 )
             ),
         )
@@ -556,9 +571,9 @@ STORY: dict[str, Scene] = {
     "return": Scene(
         "The Return", "dawn", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "A soft glow."), 
-            Line("Mika", "I'm back."), 
-            Line("Mallory", "You are home."),
+            Line("Narration", "At the garden memorial, Mallory and Lira speak to Mika as if she can still hear them. A soft, golden glow gathers around the fragments of her soul."), 
+            Line("Mika", "Mallory...? Lira...? I'm all right. I could feel how much you wanted me back."), 
+            Line("Mallory", "You are home. This time, you do not have to be alone. We're here."),
         ), 
         (
             Choice(
@@ -566,8 +581,9 @@ STORY: dict[str, Scene] = {
                 next_scene="jealousy", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I missed you."), 
-                    Line("Mallory", "We missed you too."),
+                    Line("Mika", "It was dark. So dark. But I heard your voice calling me. It was like a lighthouse."), 
+                    Line("Mika", "I missed you. Both of you. So much."), 
+                    Line("Mallory", "We missed you too, Mika. Welcome back."),
                 )
             ), 
             Choice(
@@ -575,8 +591,9 @@ STORY: dict[str, Scene] = {
                 next_scene="jealousy", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Thanks."), 
-                    Line("Mallory", "Mika?"),
+                    Line("Mika", "Thanks. For bringing me back. I guess."), 
+                    Line("Mallory", "Mika? What's wrong? Did something happen in the dark?"), 
+                    Line("Mika", "I don't want to talk about it right now."),
                 )
             ),
         )
@@ -584,9 +601,9 @@ STORY: dict[str, Scene] = {
     "jealousy": Scene(
         "The Place Beside the Princess", "moon", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "A servant calls Lira the new maid."), 
-            Line("Mika", "You replaced me."), 
-            Line("Mallory", "No."),
+            Line("Narration", "A servant mistakenly calls Lira the princess's 'new maid' in passing. Mika's smile falters. Lira is wearing the very apron Mika used to fold each morning."), 
+            Line("Mika", "You found someone to take my place before I even came back. I was gone for five minutes. Well, a few weeks."), 
+            Line("Mallory", "Mika, please. Tell me what you heard. It's not what you think. Lira was just helping me survive."),
         ), 
         (
             Choice(
@@ -594,8 +611,9 @@ STORY: dict[str, Scene] = {
                 next_scene="confrontation", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I was scared."), 
-                    Line("Mallory", "I'm sorry."),
+                    Line("Mika", "I saved this world. I died for it. Why does it feel as if I have already been erased from it?"), 
+                    Line("Mika", "I was scared. I'm still scared. But I don't want to push you away."), 
+                    Line("Mallory", "I'm so sorry, Mika. I never meant to make you feel that way."),
                 )
             ), 
             Choice(
@@ -603,8 +621,9 @@ STORY: dict[str, Scene] = {
                 next_scene="confrontation", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "You're all the same."), 
-                    Line("Mallory", "Please!"),
+                    Line("Mika", "You're all the same. Fifty-five times I've died for people, and fifty-five times I've been replaced the second I closed my eyes."), 
+                    Line("Mallory", "Mika, please! It's not like that!"), 
+                    Line("Mika", "Then what is it like? Because it looks exactly like that from where I'm standing."),
                 )
             ),
         )
@@ -612,9 +631,9 @@ STORY: dict[str, Scene] = {
     "confrontation": Scene(
         "The Words Left Unsaid", "archive", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "An ink-black handprint."), 
-            Line("Mika", "Something is wrong."), 
-            Line("Lira", "We must be careful."),
+            Line("Narration", "Mika, Mallory, and Lira retreat to the archive to talk. A window slams shut though there is no wind. An ink-black handprint appears on the inside of the glass, smoking slightly."), 
+            Line("Mika", "When I heard 'new maid,' it felt like the last place in the world that was mine disappeared. Like I was just a ghost."), 
+            Line("Lira", "I wanted to keep your place warm. I never wanted to stand in it. I'm sorry, Mika."),
         ), 
         (
             Choice(
@@ -622,8 +641,9 @@ STORY: dict[str, Scene] = {
                 next_scene="reconciliation", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "We can't let it win."), 
-                    Line("Mallory", "Together."),
+                    Line("Mika", "I know you didn't mean to hurt me. But it did hurt. I've lost everyone fifty-five times over. I'm terrified of being forgotten."), 
+                    Line("Mika", "Something in this palace wants us to doubt each other. It's feeding on our fear. We can't let it win."), 
+                    Line("Mallory", "Together. We face it together."),
                 )
             ), 
             Choice(
@@ -631,8 +651,9 @@ STORY: dict[str, Scene] = {
                 next_scene="reconciliation", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "This is your fault."), 
-                    Line("Mallory", "Mika!"),
+                    Line("Mika", "This is your fault. Both of you. You made me feel like I was nothing."), 
+                    Line("Mallory", "Mika! That's not fair and you know it!"), 
+                    Line("Mika", "Fair? Nothing about this is fair."),
                 )
             ),
         )
@@ -640,9 +661,9 @@ STORY: dict[str, Scene] = {
     "reconciliation": Scene(
         "The Ribbon Returned", "garden", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "Lira places the ribbon down."), 
-            Line("Mallory", "We want you here."), 
-            Line("Mika", "I was scared."),
+            Line("Narration", "Lira places Mika's pale ribbon on the table instead of putting it on. She waits for Mika to decide what it means, a gesture of ultimate respect."), 
+            Line("Mallory", "I want both of you here. Not as copies of one another—as yourselves. You both mean the world to me."), 
+            Line("Mika", "I was scared. I still am. But I don't want fear choosing for me."),
         ), 
         (
             Choice(
@@ -650,8 +671,9 @@ STORY: dict[str, Scene] = {
                 next_scene="trio", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I'm staying."), 
-                    Line("Lira", "Good."),
+                    Line("Narration", "Mika picks up the ribbon and ties it back into her hair. The garden lanterns flare to life one by one, pushing back the darkness."), 
+                    Line("Mika", "I'm not going anywhere. And I'm not going to let a little jealousy ruin this. We're a team."), 
+                    Line("Lira", "Agreed. We are stronger together."),
                 )
             ), 
             Choice(
@@ -659,8 +681,8 @@ STORY: dict[str, Scene] = {
                 next_scene="trio", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "I need time."), 
-                    Line("Mallory", "Okay."),
+                    Line("Mika", "I need time. I'm not ready to just pretend everything is okay."), 
+                    Line("Mallory", "Okay. Take all the time you need. We'll be here when you're ready."),
                 )
             ),
         )
@@ -668,9 +690,9 @@ STORY: dict[str, Scene] = {
     "trio": Scene(
         "Three Places at the Table", "garden", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "A new household."), 
-            Line("Lira", "A team."), 
-            Line("Mika", "A family."),
+            Line("Narration", "Mika returns to the household by choice. Mallory keeps Lira as her maid and Mika takes charge of the palace staff; Lira remains the princess's trusted guard and closest confidante."), 
+            Line("Lira", "No one here needs to disappear for someone else to belong. We're a team. A weird, chaotic team."), 
+            Line("Mika", "Then let us keep the table wide enough for all of us."),
         ), 
         (
             Choice(
@@ -678,8 +700,9 @@ STORY: dict[str, Scene] = {
                 next_scene="assassination", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Let's eat!"), 
-                    Line("Mallory", "Yes!"),
+                    Line("Narration", "For the first time in weeks, the palace feels like a place of warmth, rather than a fortress under siege."), 
+                    Line("Mika", "Let's eat! I'm starving!"), 
+                    Line("Mallory", "I'll have the chefs prepare a feast!"),
                 )
             ), 
             Choice(
@@ -687,8 +710,9 @@ STORY: dict[str, Scene] = {
                 next_scene="assassination", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Okay."), 
-                    Line("Lira", "..."),
+                    Line("Mika", "Okay. Sounds good."), 
+                    Line("Lira", "... Is everything alright, Mika?"), 
+                    Line("Mika", "Yeah. Just tired. Let's get some rest."),
                 )
             ),
         )
@@ -696,9 +720,9 @@ STORY: dict[str, Scene] = {
     "assassination": Scene(
         "A Threat in the Garden", "moon", ("Lira", "Mika", "Mallory"), 
         (
-            Line("Narration", "An assassin strikes."), 
-            Line("Lira", "Down!"), 
-            Line("Mika", "I got her!"),
+            Line("Narration", "A hidden faction tries to strike at the royal family during a moonlit walk. Lira spots the glint of a blade first, a flash of silver in the bushes."), 
+            Line("Lira", "Mika, down! Assassin on the east wall!"), 
+            Line("Narration", "Mika throws herself in front of Mallory, catching a poisoned dart on her armored sleeve. The three women fight back-to-back, a perfect unit."),
         ), 
         (
             Choice(
@@ -706,17 +730,19 @@ STORY: dict[str, Scene] = {
                 next_scene="conspiracy", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Stay behind me."), 
-                    Line("Mallory", "Thank you."),
+                    Line("Mika", "Stay behind me! I won't let them touch you!"), 
+                    Line("Lira", "The palace is safer when we trust each other enough to share the watch."), 
+                    Line("Mallory", "Thank you, Mika. You saved my life."),
                 )
             ), 
             Choice(
-                text="Go on the offensive", 
+                text="Offensive", 
                 next_scene="conspiracy", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "I'll hunt them down."), 
-                    Line("Lira", "Careful!"),
+                    Line("Mika", "I'll hunt them down. They won't get far."), 
+                    Line("Lira", "Careful! It could be a trap!"), 
+                    Line("Narration", "Mika charges into the darkness, determined to end the threat permanently."),
                 )
             ),
         )
@@ -724,27 +750,29 @@ STORY: dict[str, Scene] = {
     "conspiracy": Scene(
         "The Hand Behind the Knife", "archive", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "Councilman Vane revealed."), 
-            Line("Mika", "Why?"), 
-            Line("Vane", "For the glory."),
+            Line("Narration", "The trail leads below the old archive. A locked door opens from the other side. Standing there is Councilman Vane, holding a glowing, dark artifact, his eyes clouded with dark magic."), 
+            Line("Mika", "You. You're the one who poisoned the wells. You killed our scouts. Why?"), 
+            Line("Vane", "For the glory of Vallhelm! The Demon Lord promised me power beyond imagination!"),
         ), 
         (
             Choice(
-                text="Arrest him", 
+                text="Arrest", 
                 next_scene="healing", 
                 effects={"peace": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Take him away."), 
-                    Line("Mallory", "Justice."),
+                    Line("Narration", "Mika disarms Vane with a swift strike, pinning him to the ground."), 
+                    Line("Mika", "Take him away. Let him rot in the dungeons for his crimes."), 
+                    Line("Mallory", "Justice will be served. Thank you, Mika."),
                 )
             ), 
             Choice(
-                text="Execute him", 
+                text="Execute", 
                 next_scene="healing", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "You die now."), 
-                    Line("Lira", "Mika, no!"),
+                    Line("Narration", "Mika's blade flashes in the dim light. Vane falls to the ground, the dark artifact shattering into dust."), 
+                    Line("Mika", "You die now. Traitors don't deserve a trial."), 
+                    Line("Lira", "Mika, no... It wasn't your place to execute him."),
                 )
             ),
         )
@@ -752,9 +780,9 @@ STORY: dict[str, Scene] = {
     "healing": Scene(
         "The Healing Kitchen", "infirmary", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "Mika's wounds burn."), 
-            Line("Mallory", "Rest."), 
-            Line("Mika", "I can't."),
+            Line("Narration", "The conspirators are stopped, but the battle leaves Mika's old wounds burning. She tries to hide the tremor in her hands from the others."), 
+            Line("Mallory", "You don't have to be useful to deserve rest. Let me bandage that."), 
+            Line("Lira", "Then tonight, we keep watch while you heal. You've earned a moment of peace."),
         ), 
         (
             Choice(
@@ -762,17 +790,19 @@ STORY: dict[str, Scene] = {
                 next_scene="prophecy", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Okay."), 
-                    Line("Mallory", "Good."),
+                    Line("Narration", "Mallory gently cleans Mika's wounds, humming a soft lullaby. Mika finally allows herself to relax, leaning into Mallory's touch."), 
+                    Line("Mika", "Thank you. Both of you. For making me feel human again."), 
+                    Line("Mallory", "Always, Mika. Always."),
                 )
             ), 
             Choice(
-                text="Push them away", 
+                text="Push away", 
                 next_scene="prophecy", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Leave me."), 
-                    Line("Lira", "..."),
+                    Line("Mika", "Leave me. I can take care of myself."), 
+                    Line("Lira", "... As you wish. We'll be right outside if you need us."), 
+                    Line("Narration", "Mika sits alone in the dark, wincing as she tries to bandage her own wounds."),
                 )
             ),
         )
@@ -780,27 +810,29 @@ STORY: dict[str, Scene] = {
     "prophecy": Scene(
         "The Prophecy Unfolds", "archive", ("Lira", "Mika", "Mallory"), 
         (
-            Line("Narration", "The final warning."), 
-            Line("Lira", "We can share the burden."), 
-            Line("Mallory", "Together."),
+            Line("Narration", "The old book reveals one final warning: a darkness older than the Demon Lord is drawing near. The true enemy approaches."), 
+            Line("Lira", "I found a way to focus the magic without asking Mika to carry it all. We can channel it together. A shared burden."), 
+            Line("Mallory", "Then we face the storm as a family, with the whole kingdom behind us."),
         ), 
         (
             Choice(
-                text="Accept the burden", 
+                text="Accept", 
                 next_scene="winter_vigil", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "Let's do it."), 
-                    Line("Mallory", "Yes."),
+                    Line("Mika", "Fifty-five times I did this alone. Not this time. Let's do it together."), 
+                    Line("Mallory", "Yes. Together."), 
+                    Line("Narration", "The ground trembles. The black winter has arrived."),
                 )
             ), 
             Choice(
-                text="Carry it alone", 
+                text="Alone", 
                 next_scene="winter_vigil", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "No, I'll do it."), 
-                    Line("Lira", "Stubborn."),
+                    Line("Mika", "No. I'll do it. I'm the champion, aren't I? I'm the one who has to make the sacrifice."), 
+                    Line("Lira", "Stubborn fool. You don't have to carry this alone."), 
+                    Line("Narration", "The ground trembles. The black winter has arrived."),
                 )
             ),
         )
@@ -808,27 +840,29 @@ STORY: dict[str, Scene] = {
     "winter_vigil": Scene(
         "The Longest Night", "winter", ("Mika", "Mallory", "Lira", "Gorthak"), 
         (
-            Line("Narration", "The black winter."), 
-            Line("Shadow", "You will break."), 
-            Line("Mika", "No, I won't."),
+            Line("Narration", "On the eve of the black winter, the four keep watch at the garden fountain. The sky is an inky void, devoid of stars."), 
+            Line("Shadow", "Fifty-five times you died alone. The fifty-sixth will end the pattern. You will break."), 
+            Line("Mika", "You're wrong. This time, I have people who know my name."),
         ), 
         (
             Choice(
-                text="Stand strong", 
+                text="Strong", 
                 next_scene="storm", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I have people who know my name."), 
-                    Line("Mallory", "We are here."),
+                    Line("Narration", "The shadow smiles with Mika's own face and vanishes beneath the ice."), 
+                    Line("Mika", "I have people who know my name. I am not alone."), 
+                    Line("Mallory", "We are here. We will always be here."),
                 )
             ), 
             Choice(
-                text="Doubt yourself", 
+                text="Doubt", 
                 next_scene="storm", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
-                    Line("Mika", "Maybe I will."), 
-                    Line("Lira", "Don't say that."),
+                    Line("Narration", "The shadow smiles with Mika's own face and vanishes beneath the ice."), 
+                    Line("Mika", "Maybe I will break. Maybe this is the time I finally fail."), 
+                    Line("Lira", "Don't say that. We need you to be strong."),
                 )
             ),
         )
@@ -836,27 +870,29 @@ STORY: dict[str, Scene] = {
     "storm": Scene(
         "The Gathering Storm", "winter", ("Mallory", "Mika", "Lira"), 
         (
-            Line("Narration", "The final battle."), 
-            Line("Mika", "I know what to protect."), 
-            Line("Mallory", "I love you."),
+            Line("Narration", "Winter turns the sky black. Beyond the walls, a vast shadow opens over Vallhelm. The final battle is at hand."), 
+            Line("Mika", "Fifty-six lives, and I finally know what I want to protect."), 
+            Line("Mallory", "Whatever happens out there... I love you, Mika. I should have said it sooner."),
         ), 
         (
             Choice(
-                text="Say I love you too", 
+                text="Love you too", 
                 next_scene="final_battle", 
                 effects={"bond": 1, "reputation": 1}, 
                 outcome_lines=(
-                    Line("Mika", "I love you too."), 
-                    Line("Mallory", "Let's go."),
+                    Line("Mika", "I love you too. Let's end this. Together."), 
+                    Line("Mallory", "Let's go."), 
+                    Line("Narration", "They charge into the darkness, side by side."),
                 )
             ), 
             Choice(
-                text="Stay silent", 
+                text="Silent", 
                 next_scene="final_battle", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
                     Line("Mika", "..."), 
-                    Line("Mallory", "Mika?"),
+                    Line("Mallory", "Mika? Please, say something."), 
+                    Line("Mika", "There's no time for words. We have a battle to win."),
                 )
             ),
         )
@@ -864,34 +900,63 @@ STORY: dict[str, Scene] = {
     "final_battle": Scene(
         "The Final Battle", "battle", ("Mika", "Mallory", "Lira", "Shadow"), 
         (
-            Line("Narration", "The shadow descends."), 
-            Line("Shadow", "You cannot win."), 
-            Line("Mika", "I am a hero!"),
+            Line("Narration", "The sky cracks open. The ancient shadow descends, a massive entity of writhing darkness and glowing red eyes."), 
+            Line("Shadow", "You are nothing but a servant. You cannot defeat me."), 
+            Line("Mika", "I am a servant. But I am also a hero. And this is my home!"),
         ), 
         (
             Choice(
-                text="Fight together", 
+                text="Together", 
                 next_scene="ending_gate", 
                 effects={"family_final": 1, "bond": 1, "reputation": 1}, 
                 outcome_lines=(
+                    Line("Narration", "Mika raises her weapon, channeling all her power into a single strike. Mallory and Lira stand beside her, combining their magic."), 
                     Line("Mika", "Together!"), 
                     Line("Shadow", "Impossible!"),
                 )
             ), 
             Choice(
-                text="Sacrifice yourself", 
+                text="Sacrifice", 
                 next_scene="ending_gate", 
                 effects={"resolve": 1, "reputation": -1}, 
                 outcome_lines=(
+                    Line("Narration", "Mika pushes Mallory and Lira out of the way, charging directly into the shadow."), 
                     Line("Mika", "I'll do it alone!"), 
-                    Line("Mallory", "No!"),
+                    Line("Mallory", "No! Mika!"),
                 )
             ),
         )
     ),
-    "ending_home": Scene("A New Dawn", "dawn", ("Mika", "Mallory", "Lira"), (Line("Narration", "The shadow breaks."), Line("Mallory", "You are home."), Line("Mika", "Forever.")), ending=True),
-    "ending_peace": Scene("The Kingdom United", "dawn", ("Gorthak", "Mika", "Mallory"), (Line("Narration", "The goblin alliance holds."), Line("Gorthak", "Neighbors."), Line("Mika", "Beside them.")), ending=True),
-    "ending_cycle": Scene("The Fifty-Sixth Return", "dawn", ("Mika", "Mallory", "Lira"), (Line("Narration", "Mika wins, but the cycle continues."), Line("Mika", "Next time."), Line("Mallory", "Always.")), ending=True),
+    "ending_home": Scene(
+        "A New Dawn", "dawn", ("Mika", "Mallory", "Lira"), 
+        (
+            Line("Narration", "Together, they break the ancient shadow. The entity shatters into a million pieces of light. Mika falls to her knees, exhausted."), 
+            Line("Mallory", "You came back. You are loved, Mika. You are home."), 
+            Line("Mika", "As long as a fragment of me remains, I will always find my way back to you. This time, I am staying home. Forever."), 
+            Line("Lira", "The dawn is breaking. We actually did it."),
+        ), 
+        ending=True
+    ),
+    "ending_peace": Scene(
+        "The Kingdom United", "dawn", ("Gorthak", "Mika", "Mallory"), 
+        (
+            Line("Narration", "The goblin alliance turns the tide. Together, the people of Vallhelm shatter the darkness and keep their promise of peace."), 
+            Line("Gorthak", "Today we fought as neighbors. Let us live that way tomorrow."), 
+            Line("Mika", "I used to think protecting people meant standing in front of them. Now I know it can mean standing beside them."), 
+            Line("Narration", "A new era of unity begins. Goblins and humans rebuild the kingdom together, and Mika stands at the center of it all."),
+        ), 
+        ending=True
+    ),
+    "ending_cycle": Scene(
+        "The Fifty-Sixth Return", "dawn", ("Mika", "Mallory", "Lira"), 
+        (
+            Line("Narration", "Mika meets the darkness alone and wins, though the familiar cycle claims its price once more."), 
+            Line("Narration", "In the quiet that follows, Mallory and Lira refuse to let her go. Their voices guide her back to the garden."), 
+            Line("Mika", "I will try again. Next time, I will let you stand beside me."), 
+            Line("Mallory", "I'll be waiting for you. Always."),
+        ), 
+        ending=True
+    ),
 }
 
 CHAPTERS = (
@@ -932,6 +997,7 @@ class BackgroundMusic:
         try: import pygame
         except ImportError: self._pygame = None; self._error = "Install pygame."; return
         self._pygame = pygame; self._error = None; self._loaded_track = None
+        self.volume = 0.5
     @property
     def available(self) -> bool: return self._pygame is not None
     @property
@@ -943,6 +1009,7 @@ class BackgroundMusic:
         track = track.resolve()
         try:
             if not self._pygame.mixer.get_init(): self._pygame.mixer.init(frequency=44100, size=-16, channels=2)
+            self._pygame.mixer.music.set_volume(self.volume)
             if self._loaded_track != track:
                 self._pygame.mixer.music.load(str(track)); self._pygame.mixer.music.play(-1); self._loaded_track = track
             else: self._pygame.mixer.music.unpause()
@@ -959,66 +1026,36 @@ class EightBitVoiceOver:
         self._pygame = pygame_module
         self.available = self._pygame is not None
         self.error = "Install pygame." if not self.available else None
-        self._requests = queue.Queue()
-        self._thread = threading.Thread(target=self._run, name="8bit-voice", daemon=True)
-        self._thread.start()
-        self._stop_event = threading.Event()
-        self._current_sound = None
+        self.volume = 0.5
+        self._active_sounds = []
         
-    def _run(self) -> None:
-        while True:
-            req = self._requests.get()
-            if req is None: break
-            speaker, text = req
-            self._play_voice(speaker, text)
-            
-    def _play_voice(self, speaker, text):
-        if not self.available or not text: return
+    def play_blip(self, speaker: str):
+        if not self.available: return
         try:
             if not self._pygame.mixer.get_init():
                 self._pygame.mixer.init(frequency=22050, size=-16, channels=1)
             base_freqs = {"Mika": 600, "Mallory": 500, "Lira": 550, "King Galvath": 200, "Gorthak": 150, "Shadow": 100, "Narration": 350}
-            base_freq = base_freqs.get(speaker, 400)
+            freq = base_freqs.get(speaker, 400) + random.randint(-10, 10)
             sample_rate = self._pygame.mixer.get_init()[0]
-            char_duration = 0.035 
+            duration = 0.03
+            count = int(sample_rate * duration)
             samples = array.array("h")
-            for char in text:
-                if self._stop_event.is_set(): break
-                if char.isspace(): samples.extend([0] * int(sample_rate * char_duration)); continue
-                freq = base_freq + (ord(char) % 30) - 15
-                count = int(sample_rate * char_duration)
-                for i in range(count):
-                    time = i / sample_rate
-                    val = 1.0 if math.sin(2 * math.pi * freq * time) > 0 else -1.0
-                    progress = i / count
-                    env = 1.0 if progress < 0.8 else (1.0 - progress) * 5.0
-                    samples.append(int(val * env * 6000))
+            for i in range(count):
+                time = i / sample_rate
+                val = 1.0 if math.sin(2 * math.pi * freq * time) > 0 else -1.0
+                progress = i / count
+                env = 1.0 if progress < 0.8 else (1.0 - progress) * 5.0
+                samples.append(int(val * env * 6000 * self.volume))
             if sys.byteorder != "little": samples.byteswap()
             sound = self._pygame.mixer.Sound(buffer=samples.tobytes())
-            self._current_sound = sound
             sound.play()
-            duration = len(text) * char_duration
-            self._stop_event.wait(duration)
-            self._current_sound = None
-        except Exception as e: print(f"8-bit voice error: {e}")
-
-    def speak(self, speaker: str, text: str) -> None:
-        if not self.available: return
-        self.stop(); self._stop_event.clear(); self._requests.put((speaker, text))
-    def stop(self) -> None:
-        self._stop_event.set()
-        if self._current_sound:
-            try: self._current_sound.stop()
-            except: pass
-        while True:
-            try: self._requests.get_nowait()
-            except queue.Empty: break
-    def close(self) -> None: self._requests.put(None)
+        except Exception: pass
 
 class Soundboard:
     SAMPLE_RATE = 22050
     def __init__(self, pygame_module: object | None) -> None:
         self._pygame = pygame_module; self.error = None; self._sounds = {}
+        self.volume = 0.5
     @property
     def available(self) -> bool: return self._pygame is not None
     def _make_sound(self, key: str) -> object:
@@ -1040,12 +1077,15 @@ class Soundboard:
             else: sample = math.sin(2 * math.pi * (880 - 430 * progress) * time) * 0.3
             samples.append(int(max(-1, min(1, sample * envelope)) * 26000))
         if sys.byteorder != "little": samples.byteswap()
-        return pygame.mixer.Sound(buffer=samples.tobytes())
+        snd = pygame.mixer.Sound(buffer=samples.tobytes())
+        snd.set_volume(self.volume)
+        return snd
     def play(self, key: str) -> None:
         if not self.available: self.error = "Need pygame."; return
         try:
             sound = self._sounds.get(key)
             if sound is None: sound = self._make_sound(key); self._sounds[key] = sound
+            sound.set_volume(self.volume)
             sound.play(); self.error = None
         except self._pygame.error as error: self.error = f"Error: {error}"
         except OSError as error: self.error = str(error)
@@ -1074,6 +1114,26 @@ class VisualNovel:
         self.root = tk.Tk(); self.root.title(APP_NAME); self.root.geometry("1100x740"); self.root.minsize(820, 600)
         self.canvas = tk.Canvas(self.root, bg="#101722", highlightthickness=0); self.canvas.pack(fill="both", expand=True)
         
+        # --- WINDOW ICON ---
+        if HAS_PIL:
+            try:
+                base_dir = Path(__file__).resolve().parent
+                icon_path = None
+                for folder in ["assets/characters", "assets", ""]:
+                    p = base_dir / folder / "Mika.png" if folder else base_dir / "Mika.png"
+                    if p.exists():
+                        icon_path = p
+                        break
+                
+                if icon_path:
+                    icon_img = Image.open(icon_path)
+                    icon_img.thumbnail((64, 64), Image.Resampling.LANCZOS)
+                    self._icon_photo = ImageTk.PhotoImage(icon_img)
+                    self.root.iconphoto(True, self._icon_photo)
+            except Exception as e:
+                print(f"Could not load window icon: {e}")
+        # -------------------
+
         self.current_scene: str | None = None
         self.line_index = 0
         self.flags = {"bond": 0, "peace": 0, "resolve": 0, "family_final": 0, "reputation": 0}
@@ -1088,6 +1148,15 @@ class VisualNovel:
         self._animated_tags = []
         self._idle_offset = 0; self._idle_direction = -1
         
+        self.typewriter_speed = 25
+        self.is_typing = False
+        self.full_text = ""
+        self.display_text = ""
+        self.typing_idx = 0
+        self.text_id = None
+        self.history = []
+        self.auto_play = False
+
         self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False
         self.music = BackgroundMusic(); self.music_enabled = self.music.available; self.music_error = None
         self.soundboard = Soundboard(self.music._pygame); self.sfx_enabled = self.soundboard.available
@@ -1125,11 +1194,12 @@ class VisualNovel:
     def new_game(self):
         self.undo_stack.clear(); self.flags = {"bond": 0, "peace": 0, "resolve": 0, "family_final": 0, "reputation": 0}; self.highest_chapter = 0
         self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
+        self.history.clear()
         self._enter_scene("summoning"); self.line_index = 0; self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx("summoning"); self.draw()
 
     def show_menu(self):
-        self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self.menu = True; self.voice.stop(); self._last_spoken = None
+        self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self.menu = True; self._last_spoken = None
         if self.music_enabled: self._start_music()
         self.draw()
         
@@ -1149,9 +1219,43 @@ class VisualNovel:
         self.menu = True; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = True
         self.draw()
 
+    def show_log(self):
+        if not self.history: return
+        win = self.tk.Toplevel(self.root)
+        win.title("Dialogue History")
+        win.geometry("600x500")
+        win.configure(bg="#101722")
+        text = self.tk.Text(win, bg="#1a2938", fg="#f4ead6", font=("Segoe UI", 11), wrap="word", padx=10, pady=10)
+        text.pack(expand=True, fill="both", padx=10, pady=10)
+        for speaker, txt in self.history:
+            text.insert("end", f"【{speaker}】\n{txt}\n\n", "speaker")
+        text.tag_config("speaker", foreground="#d9bd82", font=("Segoe UI", 11, "bold"))
+        text.config(state="disabled")
+
+    def show_settings(self):
+        win = self.tk.Toplevel(self.root)
+        win.title("Settings")
+        win.geometry("350x300")
+        win.configure(bg="#101722")
+        
+        self.tk.Label(win, text="Audio Settings", bg="#101722", fg="#edcf88", font=("Segoe UI", 14, "bold")).pack(pady=10)
+        
+        def update_music(val): self.music.volume = float(val); self.music._pygame.mixer.music.set_volume(self.music.volume) if self.music.available else None
+        def update_sfx(val): self.soundboard.volume = float(val)
+        def update_voice(val): self.voice.volume = float(val)
+        
+        for label, func, init in (("Music Volume", update_music, self.music.volume), 
+                                   ("SFX Volume", update_sfx, self.soundboard.volume), 
+                                   ("Voice Volume", update_voice, self.voice.volume)):
+            self.tk.Label(win, text=label, bg="#101722", fg="#c5c0bd").pack()
+            scale = self.tk.Scale(win, from_=0, to=1, resolution=0.1, orient="horizontal", command=func, bg="#1a2938", fg="#f4ead6", highlightthickness=0)
+            scale.set(init)
+            scale.pack(fill="x", padx=20, pady=5)
+
     def choose_chapter(self, index: int):
         if not 0 <= index <= self.highest_chapter or index >= len(CHAPTERS): return
         self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
+        self.history.clear()
         self._enter_scene(CHAPTERS[index].scene_id); self.line_index = 0; self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx(self.current_scene or ""); self.draw()
 
@@ -1172,14 +1276,22 @@ class VisualNovel:
 
     def toggle_voice(self):
         if not self.voice.available: self.voice_error = self.voice.error or "Unavailable."; self.draw(); return
-        self.voice_enabled = not self.voice_enabled; self.voice.stop(); self._last_spoken = None
-        if self.voice_enabled and not self.menu: self._speak_current(force=True)
+        self.voice_enabled = not self.voice_enabled
         self.draw()
 
     def toggle_sound_effects(self):
         self.sfx_enabled = not self.sfx_enabled
         if not self.sfx_enabled and self.music.available: self.music._pygame.mixer.stop()
         self.draw()
+
+    def toggle_auto(self):
+        self.auto_play = not self.auto_play
+        if self.auto_play and not self.is_typing: self.root.after(1000, self._auto_advance)
+        self.draw()
+
+    def _auto_advance(self):
+        if self.auto_play and not self.is_typing:
+            self.advance()
 
     def play_scene_sfx(self, scene_id: str):
         if not self.menu and scene_id in CHAPTER_MUSIC and self.music_enabled: self._start_music()
@@ -1192,26 +1304,32 @@ class VisualNovel:
         if self.sfx_enabled: self.soundboard.play(key)
         self.draw()
 
-    def _speak_current(self, force: bool = False):
-        if self.menu or self.current_scene is None or not self.voice_enabled: return
+    def _start_typing(self, speaker, full_text):
+        self.full_text = full_text
+        self.typing_idx = 0
+        self.display_text = ""
+        self.is_typing = True
+        self._current_speaker = speaker
+        self._type_char()
+
+    def _type_char(self):
+        if not self.is_typing or self.typing_idx >= len(self.full_text):
+            self.is_typing = False
+            self.display_text = self.full_text
+            if self.text_id: self.canvas.itemconfigure(self.text_id, text=self.display_text)
+            if self.auto_play: self.root.after(1500, self._auto_advance)
+            return
         
-        if self.temp_lines:
-            if self.temp_index >= len(self.temp_lines): return
-            line = self.temp_lines[self.temp_index]
-            key = (self.current_scene, "temp", self.temp_index)
-        else:
-            scene = STORY[self.current_scene]
-            line = scene.lines[self.line_index]
-            key = (self.current_scene, self.line_index)
+        self.typing_idx += 1
+        self.display_text = self.full_text[:self.typing_idx]
+        if self.text_id: self.canvas.itemconfigure(self.text_id, text=self.display_text)
+        
+        if self.typing_idx % 2 == 0 and self.voice_enabled:
+            self.voice.play_blip(self._current_speaker)
             
-        if key == self._last_spoken and not force: return
-        self._last_spoken = key
-        
-        final_text = resolve_text(line.text, self.flags)
-        self.voice.speak(line.speaker, final_text)
+        self.root.after(self.typewriter_speed, self._type_char)
 
     def close(self):
-        self.voice.close()
         try: self.music.close()
         except OSError as error: self.messagebox.showerror(APP_NAME, f"Error:\n{error}")
         self.root.destroy()
@@ -1222,51 +1340,60 @@ class VisualNovel:
 
     def _on_click(self, event):
         item = self.canvas.find_withtag("current")
-        if not item: return
-        tags = self.canvas.gettags(item[0])
-        for tag in tags:
-            if tag.startswith("choice_"): self.choose(int(tag.split("_", 1)[1])); return
-            if tag.startswith("chapter_"):
-                chapter_key = tag.removeprefix("chapter_")
-                chapter_index = next((i for i, chapter in enumerate(CHAPTERS) if chapter.key == chapter_key), None)
-                if chapter_index is not None: self.choose_chapter(chapter_index)
-                return
-            if tag.startswith("track_"):
-                chapter_key = tag.removeprefix("track_")
-                chapter = next((c for c in CHAPTERS if c.key == chapter_key), None)
-                if chapter:
-                    track_path = CHAPTER_MUSIC.get(chapter.scene_id)
-                    if track_path and self.music_enabled:
-                        try: self.music.play(asset_path(*track_path.parts))
-                        except Exception as e: print("Music Error:", e)
-                return
-            if tag.startswith("effect_"): self.play_effect(tag.removeprefix("effect_")); return
-            if tag.startswith("menu_"):
-                action = tag[5:]
-                if action == "new": self.new_game()
-                elif action == "continue": self.load_game()
-                elif action == "chapters": self.show_chapter_select()
-                elif action == "soundboard": self.show_soundboard()
-                elif action == "soundtrack": self.show_soundtrack()
-                elif action == "credits": self.show_credits()
-                elif action == "sound": self.toggle_music()
-                elif action == "voice": self.toggle_voice()
-                elif action == "effects": self.toggle_sound_effects()
-                elif action == "back": self.show_menu()
-                elif action == "quit": self.close()
-                return
-            if tag.startswith("control_"):
-                action = tag[8:]
-                if action == "save": self.save_game()
-                elif action == "back": self.go_back()
-                elif action == "menu": self.show_menu()
-                elif action == "music": self.toggle_music()
-                elif action == "voice": self.toggle_voice()
-                elif action == "effects": self.toggle_sound_effects()
-                elif action == "chapters": self.show_chapter_select()
-                elif action == "soundboard": self.show_soundboard()
-                return
-            if tag == "advance": self.advance(); return
+        clicked_button = False
+        if item:
+            tags = self.canvas.gettags(item[0])
+            for tag in tags:
+                if tag.startswith("choice_"): self.choose(int(tag.split("_", 1)[1])); return
+                if tag.startswith("chapter_"):
+                    chapter_key = tag.removeprefix("chapter_")
+                    chapter_index = next((i for i, chapter in enumerate(CHAPTERS) if chapter.key == chapter_key), None)
+                    if chapter_index is not None: self.choose_chapter(chapter_index)
+                    return
+                if tag.startswith("track_"):
+                    chapter_key = tag.removeprefix("track_")
+                    chapter = next((c for c in CHAPTERS if c.key == chapter_key), None)
+                    if chapter:
+                        track_path = CHAPTER_MUSIC.get(chapter.scene_id)
+                        if track_path and self.music_enabled:
+                            try: self.music.play(asset_path(*track_path.parts))
+                            except Exception: pass
+                    return
+                if tag.startswith("effect_"): self.play_effect(tag.removeprefix("effect_")); return
+                if tag.startswith("menu_"):
+                    clicked_button = True
+                    action = tag[5:]
+                    if action == "new": self.new_game()
+                    elif action == "continue": self.load_game()
+                    elif action == "chapters": self.show_chapter_select()
+                    elif action == "soundboard": self.show_soundboard()
+                    elif action == "soundtrack": self.show_soundtrack()
+                    elif action == "credits": self.show_credits()
+                    elif action == "sound": self.toggle_music()
+                    elif action == "voice": self.toggle_voice()
+                    elif action == "effects": self.toggle_sound_effects()
+                    elif action == "back": self.show_menu()
+                    elif action == "quit": self.close()
+                    return
+                if tag.startswith("control_"):
+                    clicked_button = True
+                    action = tag[8:]
+                    if action == "save": self.save_game()
+                    elif action == "back": self.go_back()
+                    elif action == "menu": self.show_menu()
+                    elif action == "music": self.toggle_music()
+                    elif action == "voice": self.toggle_voice()
+                    elif action == "effects": self.toggle_sound_effects()
+                    elif action == "chapters": self.show_chapter_select()
+                    elif action == "soundboard": self.show_soundboard()
+                    elif action == "auto": self.toggle_auto()
+                    elif action == "log": self.show_log()
+                    elif action == "settings": self.show_settings()
+                    return
+                if tag == "advance": self.advance(); return
+
+        if not self.menu and not clicked_button and not self.chapter_select and not self.soundboard_visible and not self.soundtrack_visible and not self.credits:
+            self.advance()
 
     def _enter_scene(self, scene_id: str):
         self.current_scene = scene_id
@@ -1281,6 +1408,13 @@ class VisualNovel:
     def advance(self):
         if self.menu or self.current_scene is None: return
         
+        if self.is_typing:
+            self.is_typing = False
+            self.display_text = self.full_text
+            if self.text_id: self.canvas.itemconfigure(self.text_id, text=self.display_text)
+            if self.auto_play: self.root.after(1500, self._auto_advance)
+            return
+
         if self.temp_lines:
             self.temp_index += 1
             if self.temp_index >= len(self.temp_lines):
@@ -1288,8 +1422,8 @@ class VisualNovel:
                 self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
                 if target: self._next_scene(target)
                 else: self.menu = True
-            self._speak_current(force=True)
-            self.draw()
+            else:
+                self.draw() 
             return
 
         scene = STORY[self.current_scene]
@@ -1297,12 +1431,13 @@ class VisualNovel:
         self._remember()
         if self.line_index < len(scene.lines) - 1:
             self.line_index += 1
+            self.draw() 
         elif scene.next_scene is not None:
-            self._next_scene(scene.next_scene)
+            self._next_scene(scene.next_scene); self.draw()
         elif scene.ending:
             self.menu = True; self._last_spoken = None
             if self.music_enabled: self._start_music()
-        self.draw()
+            self.draw()
 
     def choose(self, index: int):
         if self.menu or self.current_scene is None or self.temp_lines: return
@@ -1315,10 +1450,9 @@ class VisualNovel:
             self.temp_lines = choice.outcome_lines
             self.temp_index = 0
             self.pending_next_scene = choice.next_scene
-            self._speak_current(force=True)
+            self.draw()
         else:
-            self._next_scene(choice.next_scene)
-        self.draw()
+            self._next_scene(choice.next_scene); self.draw()
 
     def go_back(self):
         if not self.undo_stack: return
@@ -1336,34 +1470,29 @@ class VisualNovel:
         self.root.after(220, self._animate_idle)
 
     def save_game(self):
-        if self.current_scene is None or self.menu or self.temp_lines:
-            self.messagebox.showinfo(APP_NAME, "Cannot save during an outcome sequence.")
-            return
+        if self.current_scene is None or self.menu or self.temp_lines: return
         path = save_path(); data = {"version": SAVE_VERSION, "current_scene": self.current_scene, "line_index": self.line_index, "flags": self.flags, "highest_chapter": self.highest_chapter}
         try: path.parent.mkdir(parents=True, exist_ok=True); path.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        except OSError as error: self.messagebox.showerror(APP_NAME, f"Error:\n{error}"); return
-        self.messagebox.showinfo(APP_NAME, f"Saved to:\n{path}")
+        except OSError: return
 
     def load_game(self):
         path = save_path()
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
             scene_id = data["current_scene"]; line_index = data["line_index"]; flags = data["flags"]
-            if not isinstance(scene_id, str) or scene_id not in STORY or type(line_index) is not int: raise ValueError("Invalid save.")
-            if not 0 <= line_index < len(STORY[scene_id].lines): raise ValueError("Invalid pos.")
-            if not isinstance(flags, dict) or set(flags) != FLAG_NAMES: raise ValueError("Invalid flags.")
+            if not 0 <= line_index < len(STORY[scene_id].lines): raise ValueError()
             highest_chapter = data.get("highest_chapter", 0)
-        except FileNotFoundError: self.messagebox.showinfo(APP_NAME, "No save found."); return
-        except Exception as error: self.messagebox.showerror(APP_NAME, f"Error loading:\n{error}"); return
+        except Exception: return
         
         self.undo_stack.clear(); self._enter_scene(scene_id); self.line_index = line_index; self.flags = flags; self.highest_chapter = max(highest_chapter, self.highest_chapter)
         self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
+        self.history.clear()
         self.play_scene_sfx(scene_id); self.draw()
 
     def _button(self, x, y, width, height, label, tag, font_size=15):
         self.canvas.create_rectangle(x, y, x + width, y + height, fill="#1a2938", outline="#a78b58", width=1, tags=(tag,))
-        self.canvas.create_text(x + width / 2, y + height / 2, text=label, fill="#f4ead6", font=("Segoe UI", font_size, "bold"), tags=(tag,), width=width - 18)
+        self.canvas.create_text(x + width / 2, y + height / 2, text=label, fill="#f4ead6", font=("Segoe UI", font_size, "bold"), tags=(tag,), width=width - 8)
 
     def _draw_background(self, backdrop: str, width: int, height: int):
         self.canvas.create_rectangle(0, 0, width, height, fill="#101722", outline="")
@@ -1375,7 +1504,6 @@ class VisualNovel:
             if p.exists(): image_path = p; break
         
         if not image_path: return
-
         cache_key = (str(image_path), width, height)
         if cache_key not in self._bg_cache:
             try:
@@ -1386,10 +1514,9 @@ class VisualNovel:
                 left = (target_w - width) // 2; top = (target_h - height) // 2
                 cropped = resized.crop((left, top, left + width, top + height))
                 self._bg_cache[cache_key] = ImageTk.PhotoImage(cropped)
-            except Exception as e: print(f"BG Error {filename}: {e}"); return
+            except Exception: return
         
         self.canvas.create_image(0, 0, image=self._bg_cache[cache_key], anchor="nw")
-        
         overlay = Image.new("RGBA", (width, height), (16, 23, 34, 120))
         self._bg_cache[("overlay", width, height)] = ImageTk.PhotoImage(overlay)
         self.canvas.create_image(0, 0, image=self._bg_cache[("overlay", width, height)], anchor="nw")
@@ -1400,58 +1527,50 @@ class VisualNovel:
         
         filename_map = {"Mika": "Mika", "Mallory": "Mallory", "King Galvath": "Galvath", "Lira": "Lira", "Gorthak": "Gorthak", "Shadow": "shadow"}
         base_name = filename_map.get(name, name)
-
         expression = ""
-        if name == "Mika":
-            if self.current_scene in {"grief", "sacrifice", "jealousy", "confrontation", "winter_vigil", "final_battle"}: expression = "_sad"
-            elif self.current_scene in {"ending_home", "ending_peace", "reconciliation", "trio", "garden", "return"}: expression = "_happy"
-        elif name == "Mallory":
-            if self.current_scene in {"grief", "lira_maid", "sacrifice"}: expression = "_sad"
-        elif name == "Lira":
-            if self.current_scene in {"jealousy", "confrontation"}: expression = "_sad"
+        if name == "Mika" and self.current_scene in {"grief", "sacrifice", "jealousy", "confrontation", "winter_vigil", "final_battle"}: expression = "_sad"
+        elif name == "Mika" and self.current_scene in {"ending_home", "ending_peace", "reconciliation", "trio", "garden", "return"}: expression = "_happy"
+        elif name == "Mallory" and self.current_scene in {"grief", "lira_maid", "sacrifice"}: expression = "_sad"
 
-        base_filename = f"{base_name}{expression}"
         base_dir = Path(__file__).resolve().parent
-        
         def find_file(fn):
             for folder in ["assets/characters", "assets", "characters", "images", "sprites", ""]:
                 p = base_dir / folder / fn if folder else base_dir / fn
                 if p.exists(): return p
             return None
 
-        img_path = find_file(f"{base_filename}.png") or find_file(f"{base_name}.png")
+        img_path = find_file(f"{base_name}{expression}.png") or find_file(f"{base_name}.png")
+        
         if not img_path:
-            self.canvas.create_rectangle(x - 50, ground - 200, x + 50, ground, fill="#333", outline="#a78b58", tags=(sprite_tag,))
+            self.canvas.create_rectangle(x-100, ground-250, x+100, ground, fill="#1a2938", outline="#a78b58", width=2, tags=(sprite_tag,))
+            self.canvas.create_text(x, ground-125, text=name, fill="#edcf88", font=("Georgia", 20, "bold"), tags=(sprite_tag,))
+            self.canvas.create_text(x, ground-100, text="[Portrait Missing]", fill="#c5c0bd", font=("Segoe UI", 10), tags=(sprite_tag,))
             self.canvas.create_text(x, ground + 15, text=name, fill="#eee5d4", font=("Segoe UI", 11, "bold"), tags=(sprite_tag,))
             return
 
         if not HAS_PIL: return
 
         if self._character_width_ratio is None:
-            reference_path = find_file("Mallory.png")
-            if reference_path is None: return
+            ref = find_file("Mallory.png")
+            if ref is None: return
             try:
-                with Image.open(reference_path) as reference:
-                    reference = reference.convert("RGBA")
-                    bbox = reference.getchannel("A").getbbox()
-                    if bbox: mallory_width_ratio = (bbox[2] - bbox[0]) / (bbox[3] - bbox[1])
+                with Image.open(ref) as r:
+                    bbox = r.convert("RGBA").getchannel("A").getbbox()
+                    if bbox: mallory_ratio = (bbox[2] - bbox[0]) / (bbox[3] - bbox[1])
                     else: return
             except OSError: return
 
-            max_height_ratio = 0
-            character_files = ("Galvath.png", "Gorthak.png", "Lira.png", "Lira_sad.png", "Mallory_sad.png", "Mika.png", "Mika_happy.png", "Mika_sad.png", "shadow.png")
-            for filename in character_files:
-                character_path = find_file(filename)
-                if character_path is None: continue
-                try:
-                    with Image.open(character_path) as character:
-                        bbox = character.convert("RGBA").getchannel("A").getbbox()
-                        if bbox:
-                            char_width = bbox[2] - bbox[0]; char_height = bbox[3] - bbox[1]
-                            max_height_ratio = max(max_height_ratio, char_height / char_width)
-                except OSError: pass
-            if max_height_ratio == 0: return
-            self._character_width_ratio = min(mallory_width_ratio, 1 / max_height_ratio)
+            max_ratio = 0
+            for fn in ("Galvath.png", "Gorthak.png", "Lira.png", "Mika.png", "shadow.png"):
+                p = find_file(fn)
+                if p:
+                    try:
+                        with Image.open(p) as c:
+                            bbox = c.convert("RGBA").getchannel("A").getbbox()
+                            if bbox: max_ratio = max(max_ratio, (bbox[3]-bbox[1]) / (bbox[2]-bbox[0]))
+                    except OSError: pass
+            if max_ratio == 0: return
+            self._character_width_ratio = min(mallory_ratio, 1 / max_ratio)
 
         max_height = int((ground - 80) * 0.98)
         target_width = int(max_height * self._character_width_ratio)
@@ -1462,19 +1581,15 @@ class VisualNovel:
                 original = Image.open(img_path).convert("RGBA")
                 bbox = original.getchannel("A").getbbox()
                 if bbox: original = original.crop(bbox)
-                
                 orig_w, orig_h = original.size
                 target_height = int(orig_h * target_width / orig_w)
-                
                 resized = original.resize((target_width, target_height), Image.Resampling.LANCZOS)
                 self._image_cache[cache_key] = ImageTk.PhotoImage(resized)
-            except Exception as e: print(f"Char Error {img_path.name}: {e}"); return
+            except Exception: return
 
         tk_image = self._image_cache[cache_key]
-        
         ground -= self._idle_offset
-        img_id = self.canvas.create_image(x, ground, image=tk_image, anchor="s", tags=(sprite_tag,))
-        
+        self.canvas.create_image(x, ground, image=tk_image, anchor="s", tags=(sprite_tag,))
         self.canvas.create_text(x, ground + 15, text=name, fill="#eee5d4", font=("Segoe UI", 11, "bold"), tags=(sprite_tag,))
 
     def _draw_menu(self, width: int, height: int):
@@ -1505,19 +1620,16 @@ class VisualNovel:
             
             for column in range(3):
                 x = 30 + column * (column_width + column_gap)
-                button_top = 120 # Reset top position for each column!
-                
+                button_top = 120
                 for arc in (ARCS[column * 2], ARCS[column * 2 + 1]):
                     self.canvas.create_text(x + 4, button_top, anchor="nw", text=arc, fill="#edcf88", font=("Segoe UI", 9, "bold"), width=column_width - 8)
                     button_top += 27
-                    
                     for chapter_index, chapter in enumerate(CHAPTERS):
                         if chapter.arc != arc: continue
                         unlocked = chapter_index <= self.highest_chapter
                         self._button(x, button_top, column_width, 30, f"{chapter.key}  {chapter.title}" if unlocked else f"{chapter.key}  LOCKED", f"chapter_{chapter.key}" if unlocked else "locked", 9)
                         button_top += 35
                     button_top += 5
-                    
             self._button(width / 2 - 105, height - 33, 210, 27, "BACK TO TITLE", "menu_back", 9)
             return
 
@@ -1552,9 +1664,7 @@ class VisualNovel:
     def _draw_coverpage(self, width: int, height: int):
         mika_x = width * 0.35
         self.canvas.create_oval(mika_x - width * 0.19, height * 0.12, mika_x + width * 0.19, height * 0.99, outline="#d5bd82", width=2)
-        
         self._draw_character("Mika", mika_x, height * 0.99, width, 0)
-        
         self.canvas.create_text(width * 0.32, height * 0.075, text="FIFTY-SIX LIVES", fill="#fff3df", font=("Georgia", max(27, width // 29), "bold"))
         self.canvas.create_text(width * 0.32, height * 0.145, text="THE TALE OF MIKA AMANOGAWA", fill="#f0d18a", font=("Segoe UI", max(10, width // 90), "bold"))
         self.canvas.create_text(width * 0.32, height * 0.205, text="One quiet maid. Fifty-five forgotten lives.\nOne chance to call a place home.", fill="#f7f1e6", font=("Segoe UI", max(10, width // 100)))
@@ -1588,24 +1698,31 @@ class VisualNovel:
         self.canvas.create_text(24, 13, anchor="nw", text=f"ARC  {chapter.arc}", fill="#e8c779", font=("Segoe UI", 9, "bold"))
         self.canvas.create_text(24, 38, anchor="nw", text=f"CHAPTER {chapter.key}  ·  {chapter.title.upper()}", fill="#f1e5ce", font=("Segoe UI", 11, "bold"))
         
-        # REPUTATION UI
         rep = self.flags.get("reputation", 0)
-        if rep >= 2:
-            rep_text, rep_color = "GOOD", "#4ade80"
-        elif rep <= -2:
-            rep_text, rep_color = "BAD", "#f87171"
-        else:
-            rep_text, rep_color = "NEUTRAL", "#fbbf24"
-            
+        if rep >= 2: rep_text, rep_color = "GOOD", "#4ade80"
+        elif rep <= -2: rep_text, rep_color = "BAD", "#f87171"
+        else: rep_text, rep_color = "NEUTRAL", "#fbbf24"
         self.canvas.create_text(24, 55, anchor="nw", text=f"REPUTATION: {rep_text}", fill=rep_color, font=("Segoe UI", 9, "bold"))
         
-        controls = (("CHAPTERS", "control_chapters", 80), ("FX", "control_soundboard", 48), ("VOICE ON" if self.voice_enabled else "VOICE OFF", "control_voice", 78), ("MUSIC", "control_music", 54), ("SAVE", "control_save", 54), ("BACK", "control_back", 54), ("MENU", "control_menu", 54))
+        controls = (
+            ("CHAPTERS", "control_chapters", 85), 
+            ("AUTO", "control_auto", 60),
+            ("LOG", "control_log", 55),
+            ("SETTINGS", "control_settings", 80),
+            ("FX", "control_soundboard", 50), 
+            ("VOICE", "control_voice", 65), 
+            ("MUSIC", "control_music", 60), 
+            ("SAVE", "control_save", 55), 
+            ("BACK", "control_back", 55), 
+            ("MENU", "control_menu", 55)
+        )
         total = sum(button_width for _label, _tag, button_width in controls) + 6 * (len(controls) - 1)
         x = width - total - 14
         for label, tag, button_width in controls:
-            self._button(x, 18, button_width, 34, label, tag, 8); x += button_width + 6
+            self.canvas.create_rectangle(x, 18, x + button_width, 34 + 18, fill="#1a2938", outline="#a78b58", width=1, tags=(tag,))
+            self.canvas.create_text(x + button_width / 2, 18 + 34 / 2, text=label, fill="#4ade80" if self.auto_play and label == "AUTO" else "#f4ead6", font=("Segoe UI", 9, "bold"), tags=(tag,), width=button_width - 10)
+            x += button_width + 6
 
-        # Characters
         stage_ground = height * 0.72
         cast = scene.cast
         if cast:
@@ -1615,7 +1732,6 @@ class VisualNovel:
             for index, name in enumerate(cast):
                 self._draw_character(name, start_x + index * spacing, stage_ground, width, index)
 
-        # Text Box
         panel_top = height * 0.72 
         self.canvas.create_rectangle(0, panel_top, width, height, fill="#101722", outline="#c4a879", width=2)
         
@@ -1631,11 +1747,15 @@ class VisualNovel:
         final_text = resolve_text(line.text, self.flags)
         
         self.canvas.create_text(34, panel_top + 17, anchor="nw", text=line.speaker.upper(), fill="#d9bd82", font=("Segoe UI", 11, "bold"))
-        self.canvas.create_text(34, panel_top + 43, anchor="nw", text=final_text, fill="#f3eee5", font=("Segoe UI", max(12, round(width / 73))), width=width - 68)
+        self.text_id = self.canvas.create_text(34, panel_top + 43, anchor="nw", text="", fill="#f3eee5", font=("Segoe UI", max(12, round(width / 73))), width=width - 68)
         
         ready_for_choice = bool(scene.choices) and not self.temp_lines and self.line_index == len(scene.lines) - 1
         
         if ready_for_choice:
+            self.is_typing = False 
+            self.display_text = final_text
+            self.canvas.itemconfigure(self.text_id, text=self.display_text)
+            
             button_h = min(38, (height - panel_top - 105) / len(scene.choices))
             y = panel_top + 105
             for index, choice in enumerate(scene.choices):
@@ -1647,8 +1767,16 @@ class VisualNovel:
                 label = "RETURN TO TITLE" if (scene.ending and self.line_index == len(scene.lines) - 1 and not self.temp_lines) else "CONTINUE  >"
             self._button(width - 210, height - 53, 176, 35, label, "advance", 10)
             
-        self.canvas.create_text(34, height - 21, anchor="w", text="Enter: continue   1–3: choose   Backspace: undo   Ctrl+C: chapters   Ctrl+B: soundboard   Ctrl+V: voice", fill="#aaa9a6", font=("Segoe UI", 8))
-        self._speak_current()
+            if not self.history or self.history[-1] != (line.speaker, final_text):
+                self.history.append((line.speaker, final_text))
+            
+            if self._last_spoken != (self.current_scene, self.line_index, self.temp_index):
+                self._last_spoken = (self.current_scene, self.line_index, self.temp_index)
+                self._start_typing(line.speaker, final_text)
+            else:
+                self.canvas.itemconfigure(self.text_id, text=self.display_text)
+
+        self.canvas.create_text(34, height - 21, anchor="w", text="Click anywhere to advance   •   Space: continue   •   Backspace: undo", fill="#aaa9a6", font=("Segoe UI", 8))
 
 def run():
     game = VisualNovel(); game.root.mainloop()
