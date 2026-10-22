@@ -21,19 +21,20 @@ except ImportError:
     HAS_PIL = False
 
 APP_NAME = "Fifty-Six Lives"
-SAVE_VERSION = 2
-FLAG_NAMES = {"bond", "peace", "resolve", "family_final"}
+SAVE_VERSION = 3
+FLAG_NAMES = {"bond", "peace", "resolve", "family_final", "reputation"}
 
 @dataclass(frozen=True)
 class Line:
     speaker: str
-    text: str
+    text: str | tuple[str, str, str]
 
 @dataclass(frozen=True)
 class Choice:
     text: str
-    next_scene: str
+    next_scene: str | None
     effects: dict[str, int] = field(default_factory=dict)
+    outcome_lines: tuple[Line, ...] = ()
 
 @dataclass(frozen=True)
 class Scene:
@@ -61,494 +62,855 @@ ARCS = (
     "VI  ·  THE FIFTY-SIXTH DAWN",
 )
 
+def resolve_text(text: str | tuple[str, str, str], flags: dict[str, int]) -> str:
+    if isinstance(text, str): return text
+    rep = flags.get("reputation", 0)
+    if rep >= 2: return text[0]
+    elif rep <= -2: return text[2]
+    else: return text[1]
+
 STORY: dict[str, Scene] = {
-    # ==========================================
-    # ARC I - A HERO IN A MAID'S DRESS
-    # ==========================================
     "summoning": Scene(
         "The Summoning", "throne", ("Mallory", "Mika"),
         (
-            Line("Narration", "The grand hall of Vallhelm is suffocatingly silent, save for the crackling hum of the summoning circle etched into the marble floor. The Demon Lord's armies are a day's march away, and the kingdom's last hope rests on a forbidden, ancient ritual."),
-            Line("Narration", "The royal mages chant in unison, their voices trembling with exhaustion. King Galvath watches from his throne, knuckles white against the armrests. Princess Mallory stands at the edge of the circle, her heart pounding against her ribs."),
+            Line("Narration", "The grand hall of Vallhelm is suffocatingly silent, save for the crackling hum of the summoning circle etched into the marble floor."),
             Line("Narration", "A flash of blinding, golden light erupts from the center of the runes. The shockwave knocks the mages off their feet. When the smoke clears, the court gasps."),
-            Line("Narration", "Instead of a towering, armored warrior, a young woman stands in the center of the circle. She is wearing a simple, black-and-white maid's uniform, holding a feather duster like a sword."),
-            Line("Mika", "Whoa! What the—? Where am I? This is definitely not the hotel hallway I was just cleaning. Why is everyone staring at me?"),
-            Line("Mallory", "By the gods... The ritual worked. But... you're a maid? We summoned a maid?"),
-            Line("Mika", "I'm Mika. And yes, I clean rooms. Is there a problem with that? Look, I don't know how I got here, but I have a shift in an hour."),
-            Line("King Galvath", "A servant! The prophecy promised a champion to save us from the abyss, and the heavens send us a scullery maid with a duster! This is a mockery!"),
-            Line("Narration", "The court erupts into panicked whispers. The King's face turns crimson with rage. He points a trembling finger at Mika, declaring the summoning a catastrophic failure."),
-            Line("Mallory", "Father, please! Silence! The circle responded to her. The magic recognized her soul. We cannot dismiss her just because she doesn't look like a knight."),
+            Line("Narration", "Instead of a towering, armored warrior, a young woman stands in the center of the circle. She is wearing a simple, black-and-white maid's uniform."),
+            Line("Mika", "Whoa! What the—? Where am I? This is definitely not the hotel hallway I was just cleaning."),
+            Line("King Galvath", "A servant! The prophecy promised a champion, and the heavens send us a scullery maid! This is a mockery!"),
         ),
         (
-            Choice("Step forward and offer to help her", "first_impression", {"bond": 1}),
-            Choice("Stand your ground and demand respect", "first_impression", {"resolve": 1}),
+            Choice(
+                text="Step forward and offer to help her", 
+                next_scene="first_impression", 
+                effects={"bond": 1, "reputation": 1},
+                outcome_lines=(
+                    Line("Mallory", "Father, please! Silence! The circle responded to her. The magic recognized her soul."),
+                    Line("Mika", "Thanks for the save. I'm Mika, by the way. Nice to meet someone here who isn't yelling at me."),
+                    Line("Mallory", "I am Mallory. And I have a feeling we are going to need each other."),
+                )
+            ),
+            Choice(
+                text="Stand your ground and demand respect", 
+                next_scene="first_impression", 
+                effects={"resolve": 1, "reputation": -1},
+                outcome_lines=(
+                    Line("Mika", "I can hear you, you know. I'm standing right here. And for the record, I've handled worse messes than a few angry soldiers."),
+                    Line("Narration", "The court gasps at her defiance. The King's face turns crimson with rage."),
+                    Line("Mallory", "Silence! The circle responded to her. We cannot dismiss her just because she doesn't look like a knight."),
+                )
+            ),
         ),
     ),
     "first_impression": Scene(
         "The Wrong Hero", "throne", ("King Galvath", "Mallory", "Mika"),
         (
-            Line("Narration", "The court's disappointment sharpens into suspicion. A seasoned captain of the guard steps forward, pointing his spear at Mika's untouched sleeves, calling the summoning a demonic trick."),
-            Line("King Galvath", "If the ritual brought a servant, then it has failed us. We need a champion who can wield a blade, not someone to dust the throne room while the kingdom burns."),
-            Line("Mika", "I can hear you, you know. I'm standing right here. And for the record, I've handled worse messes than a few angry soldiers. Have you ever cleaned up after a royal banquet?"),
-            Line("Narration", "Mika's calm defiance only angers the court further. The guards tighten their grip on their weapons. The air grows cold, and the nearest torch gutters out."),
-            Line("Narration", "A sudden, freezing wind sweeps through the sealed hall, extinguishing half the candles. In the sudden darkness, a guttural, echoing whisper slithers through the room."),
-            Line("Shadow", "Mika... Fifty-six... again..."),
-            Line("Mika", "Did... did anyone else hear that? Please tell me I'm not going crazy."),
-            Line("Mallory", "I heard it. Guards, to me! We need to get her out of here. The court is turning hostile, and something dark is moving in the shadows."),
-            Line("Mika", "Great. First day on the new job, and the shadows are already talking to me."),
+            Line("Narration", "The court's disappointment sharpens into suspicion. A seasoned captain of the guard steps forward, pointing his spear at Mika."),
+            Line("King Galvath", "If the ritual brought a servant, then it has failed us. We need a champion who can wield a blade."),
+            Line("Mika", "I'm right here, you know. I have a name. It's Mika."),
         ),
-        next_scene="coffee",
+        (
+            Choice(
+                text="Apologize and try to explain", 
+                next_scene="coffee", 
+                effects={"bond": 1, "reputation": 1},
+                outcome_lines=(
+                    Line("Mika", "Look, I don't know how I got here, but I'm not your enemy. I just want to go home."),
+                    Line("Narration", "The King hesitates, his expression softening slightly at her calm tone."),
+                    Line("Mallory", "Let us speak in the gardens, away from this hostility."),
+                )
+            ),
+            Choice(
+                text="Tell the King to shut up", 
+                next_scene="coffee", 
+                effects={"resolve": 1, "reputation": -1},
+                outcome_lines=(
+                    Line("Mika", "Maybe if your kingdom wasn't such a mess, the heavens wouldn't have sent a maid. Ever think of that?"),
+                    Line("Narration", "The guards tighten their grip on their weapons. The air grows cold, and the nearest torch gutters out."),
+                    Line("Mallory", "Guards, to me! We need to get her out of here before this turns into a bloodbath."),
+                )
+            ),
+        ),
     ),
     "coffee": Scene(
         "A Cup Before the Storm", "garden", ("Mallory", "Mika"),
         (
-            Line("Narration", "Mallory quickly ushers Mika out of the echoing throne room and into the quiet, sprawling palace gardens. The night air is cool and carries the sweet scent of night-blooming jasmine."),
-            Line("Narration", "They sit on a stone bench near a gently bubbling fountain. The distant sound of the panicked court fades away, replaced by the chirping of crickets."),
-            Line("Mallory", "I apologize for my father. He is terrified. We all are. The Demon Lord's shadow looms over us, and we are desperate. But I am not ready to give up on you yet."),
-            Line("Mika", "It's okay. I'm used to people underestimating me. Coffee is rare where I come from. I usually just drink tea. And right now, I could really use a cup."),
-            Line("Mallory", "Then tea it is. I can find you chamomile, a warm blanket, and a quiet room. You must have a thousand questions."),
-            Line("Mika", "Just one big one: how do I get home? But... a quiet place, a warm drink, and no urgent prophecy... I could get used to this."),
-            Line("Mallory", "I am Mallory, by the way. Princess of Vallhelm. Though, I suspect titles mean little to someone who has crossed worlds."),
-            Line("Mika", "Nice to meet you, Mallory. You're the first person here who hasn't looked at me like I'm a bug."),
-            Line("Narration", "Their peaceful moment is shattered by the frantic ringing of the northern watchtower bell. A messenger races into the garden, pale, bleeding, and out of breath."),
-            Line("Messenger", "Your Highness! The scouts... the entire northern patrol has vanished! The border is open!"),
+            Line("Narration", "Mallory walks Mika out of the echoing throne room and into the quiet, sprawling palace gardens."),
+            Line("Narration", "They sit on a stone bench near a gently bubbling fountain. The distant sound of the panicked court fades away."),
+            Line("Mallory", "I apologize for my father. He is terrified. We all are. But I am not ready to give up on you yet."),
         ),
         (
-            Choice("Stay close to Mallory and protect her", "market", {"bond": 1}),
-            Choice("Go see what happened at the gate", "market", {"resolve": 1}),
+            Choice(
+                text="Offer to help her anyway", 
+                next_scene="market", 
+                effects={"bond": 1, "reputation": 1},
+                outcome_lines=(
+                    Line("Mika", "It's okay. I'm used to people underestimating me. Let me see what I can do to help."),
+                    Line("Mallory", "You are a rare soul, Mika."),
+                )
+            ),
+            Choice(
+                text="Demand to be sent home immediately", 
+                next_scene="market", 
+                effects={"resolve": 1, "reputation": -1},
+                outcome_lines=(
+                    Line("Mika", "I don't care about your war. I want to go home. Now."),
+                    Line("Mallory", "I... I don't know how to send you back. The ritual only works one way."),
+                    Line("Mika", "Then find a way. Or I'll find it myself."),
+                )
+            ),
         ),
     ),
     "market": Scene(
         "The City Market", "garden", ("Mallory", "Mika"),
         (
-            Line("Narration", "Before the sun rises, Mallory disguises herself in a heavy cloak and takes Mika into the lower city. The streets are damp with morning fog, and the market is bustling, but a thick layer of fear hangs in the air."),
-            Line("Mallory", "The people are scared. They look at the city walls and wonder if they will hold against the Demon Lord. The nobles hide in their estates, but the common folk have nowhere to go."),
-            Line("Mika", "I used to clean rooms for people who never looked me in the eye. It's strange, being the one everyone is staring at now. They look at me like I'm either a savior or a monster."),
-            Line("Narration", "A small child, distracted by the commotion, bumps into Mika, dropping a woven basket of apples. The fruit scatters across the muddy cobblestones."),
-            Line("Mika", "Oh! Careful there, little one. Let me help you."),
-            Line("Narration", "Mika immediately kneels in the dirt, ignoring her pristine uniform, and begins gathering the apples. The child's mother watches in stunned silence."),
-            Line("Mallory", "You care for them already. You have a gentle heart, Mika. A true leader doesn't just fight; they serve."),
-            Line("Mika", "I don't know about that. I just know it doesn't cost anything to be kind. And these apples look delicious."),
-            Line("Narration", "A sudden, sharp scream pierces the market air. A squad of palace guards, led by a scarred sergeant, is violently harassing an elderly merchant, accusing him of hoarding grain supplies."),
-            Line("Sergeant", "You're hiding food for the enemy, aren't you, old man? We'll tear this stall apart!"),
+            Line("Narration", "Before the sun rises, Mallory disguises herself in a heavy cloak and takes Mika into the lower city."),
+            Line("Mika", "The people are scared. I used to clean rooms for people who never looked me in the eye."),
+            Line("Narration", "A small child bumps into Mika, dropping a basket of apples. The fruit scatters."),
         ),
-        next_scene="knight_mistake",
+        (
+            Choice(
+                text="Help the child gather the apples", 
+                next_scene="knight_mistake", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Here you go, little one. Be careful."), 
+                    Line("Mallory", "You have a gentle heart."),
+                )
+            ),
+            Choice(
+                text="Ignore the child and keep walking", 
+                next_scene="knight_mistake", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Watch where you're going."), 
+                    Line("Mallory", "That was cold, Mika."),
+                )
+            ),
+        ),
     ),
     "knight_mistake": Scene(
         "The Knight's Mistake", "throne", ("Mika", "Mallory", "Lira"),
         (
-            Line("Narration", "Back at the palace, tensions boil over. A frightened, young guard, believing Mika's intervention at the market was demonic manipulation, lunges at her with a spear."),
-            Line("Narration", "Mika doesn't flinch. She pivots on her heel, sidestepping the thrust by a hair's breadth, grabs the wooden shaft of the spear, and snaps it in two with a sharp twist of her wrist."),
-            Line("Lira", "Enough! Stand down, soldier! Stand down! She could have broken your arm. Instead, she disarmed you without drawing a drop of blood."),
-            Line("Mika", "I know what fear makes people do. I've seen it a lot. Just don't make me prove I am harmless twice, okay?"),
-            Line("Narration", "The guard falls to his knees, trembling. Mika sighs, offering him a hand to help him back to his feet."),
-            Line("Lira", "I am Lira, Captain of the Royal Guard. You have my apologies, and my respect. You move like a ghost."),
-            Line("Mika", "I'm just used to dodging thrown mugs and angry customers. Same energy, really."),
-            Line("Narration", "Lira examines the broken spear tip. It is coated in a strange, unnatural frost, despite the warm summer air in the palace."),
-            Line("Lira", "This isn't normal. Someone enchanted this blade. There is a rot spreading through this castle."),
+            Line("Narration", "Back at the palace, a frightened young guard lunges at Mika with a spear."),
+            Line("Narration", "Mika pivots, sidesteps the thrust, and snaps the spear in two with her bare hands."),
+            Line("Lira", "Enough! Stand down, soldier! She could have broken your arm."),
         ),
-        next_scene="archive",
+        (
+            Choice(
+                text="Forgive the guard", 
+                next_scene="archive", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I know what fear makes people do. It's okay."), 
+                    Line("Lira", "You have my respect."),
+                )
+            ),
+            Choice(
+                text="Threaten the guard", 
+                next_scene="archive", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "If he tries that again, I won't be so gentle."), 
+                    Line("Lira", "Watch your tongue, Maid."),
+                )
+            ),
+        ),
     ),
     "archive": Scene(
         "The Ancient Record", "archive", ("King Galvath", "Mallory", "Mika"),
         (
-            Line("Narration", "King Galvath, humbled but still suspicious, summons the three women to the restricted section of the royal archives. The room smells of old paper, ozone, and dust."),
-            Line("Narration", "He opens a massive, ancient tome bound in dragon leather. The pages glow with a faint, ethereal light."),
-            Line("King Galvath", "This book names you, Mika. It describes fifty-five lives before this one. Each time, your memories were wiped clean. You are a cosmic pawn."),
-            Line("Mika", "Fifty-five lives? You mean I've done this before? I've died before? Fifty-five times?"),
-            Line("King Galvath", "Vallhelm is the fifty-sixth world to call you. The ritual is a cycle of sacrifice. You save the world, you die, and you are reborn to do it again."),
-            Line("Mika", "That is... incredibly messed up. Why would anyone agree to that?"),
-            Line("Mallory", "Because the alternative is the end of everything. But you didn't agree to this, did you? You were just brought here."),
-            Line("Mika", "Then let this life belong to me. I will help you, I will fight your Demon Lord, but I choose what home means. No more wiping my memories. No more treating me like a tool."),
+            Line("Narration", "King Galvath opens a massive, ancient tome bound in dragon leather."),
+            Line("King Galvath", "This book names you, Mika. It describes fifty-five lives before this one."),
+            Line("Mika", "Fifty-five lives? You mean I've done this before?"),
         ),
         (
-            Choice("Promise she will always have a choice", "training", {"bond": 1}),
-            Choice("Tell her to focus on defending the kingdom", "training", {"resolve": 1}),
+            Choice(
+                text="Accept the responsibility", 
+                next_scene="training", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Then let this life belong to me. I will help you."), 
+                    Line("Mallory", "Thank you, Mika."),
+                )
+            ),
+            Choice(
+                text="Refuse the prophecy", 
+                next_scene="training", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I am not a pawn. I won't be your sacrifice."), 
+                    Line("Mallory", "Please, Mika. We need you."),
+                )
+            ),
         ),
     ),
     "training": Scene(
-        "Sparring with Lira", "throne", ("Mika", "Lira"),
+        "Sparring with Lira", "throne", ("Mika", "Lira"), 
         (
-            Line("Narration", "The training yard is filled with the harsh clang of steel. Lira is a whirlwind of precision and grace, her sword cutting through the air. Mika, however, is struggling to adjust to the weight of a real blade."),
-            Line("Lira", "Your strength is incredible, Mika, but your footwork is sloppy! You fight like you're holding a mop!"),
-            Line("Mika", "A mop can be pretty dangerous if you know how to swing it! I once fought off a drunk noble with a bucket of soapy water!"),
-            Line("Narration", "Lira laughs, a genuine, warm sound. She lunges again, but Mika anticipates it. She sweeps Lira's leg with the flat of her blade, knocking the captain into the dirt."),
-            Line("Lira", "You are full of surprises, Maid. Perhaps you really are the hero the prophecy spoke of."),
-            Line("Mika", "I'm no hero. I'm just someone who doesn't want to see this place burn. And I really don't want to die again."),
-            Line("Lira", "You won't. Not on my watch. I've seen a lot of soldiers, Mika. You have something they lack: you fight to protect, not to kill."),
-            Line("Narration", "Mika extends a hand, pulling Lira to her feet. A bond of mutual respect forms between them."),
-        ),
-        next_scene="garden",
+            Line("Narration", "Lira swings her sword, but Mika holds her ground."), 
+            Line("Lira", "Your footwork is sloppy!"), 
+            Line("Mika", "A mop can be dangerous too!"),
+        ), 
+        (
+            Choice(
+                text="Help Lira up", 
+                next_scene="garden", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Good match."), 
+                    Line("Lira", "You are full of surprises."),
+                )
+            ), 
+            Choice(
+                text="Gloat over her", 
+                next_scene="garden", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Not so tough now, are you?"), 
+                    Line("Lira", "Don't push your luck."),
+                )
+            ),
+        )
     ),
     "garden": Scene(
-        "A Quiet Afternoon", "garden", ("Mallory", "Mika"),
+        "A Quiet Afternoon", "garden", ("Mallory", "Mika"), 
         (
-            Line("Narration", "Days pass in relative peace, a calm before the inevitable storm. Mallory leads Mika to a hidden garden behind the palace walls, overgrown with wild roses and ivy."),
-            Line("Mallory", "The palace garden is peaceful. No one will bother you here. This was my mother's favorite place."),
-            Line("Mika", "It's beautiful. A quiet place, a warm drink, and no urgent prophecy. I could get used to this."),
-            Line("Mallory", "I want to know more about you, Mika. Not the champion, not the prophecy. Just... you. What was your life like before all this?"),
-            Line("Narration", "Mika smiles softly, the first genuine smile she has shown since arriving. They spend hours talking about her world, her small apartment, her love of cleaning, and the peaceful, mundane life she left behind."),
-            Line("Mika", "I used to think my life was boring. Just waking up, going to work, coming home. But now... I'd give anything for one boring Tuesday."),
-            Line("Mallory", "You miss it, don't you? Your home."),
-            Line("Mika", "I did. But... this place is starting to feel like home too. You make it feel like home, Mallory."),
-            Line("Narration", "Mallory reaches out, gently brushing a stray leaf from Mika's hair. Their eyes meet, and a deep, unspoken connection forms between them."),
-        ),
+            Line("Narration", "Days pass. Mallory leads Mika to a hidden garden."), 
+            Line("Mallory", "This was my mother's favorite place."), 
+            Line("Mika", "It's beautiful."),
+        ), 
         (
-            Choice("Stay and share the quiet", "goblin_warning", {"bond": 1}),
-            Choice("Check the farm's outer fence", "goblin_warning", {"resolve": 1}),
-        ),
+            Choice(
+                text="Open up to Mallory", 
+                next_scene="goblin_warning", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I used to think my life was boring. Now I miss it."), 
+                    Line("Mallory", "You make this place feel like home too."),
+                )
+            ), 
+            Choice(
+                text="Keep your distance", 
+                next_scene="goblin_warning", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I'm not here to make friends."), 
+                    Line("Mallory", "I see."),
+                )
+            ),
+        )
     ),
-    # ==========================================
-    # ARC II - A BORDER OF FEAR
-    # ==========================================
     "goblin_warning": Scene(
-        "Tracks at the Orchard", "farm", ("Mika", "Mallory", "Lira"),
+        "Tracks at the Orchard", "farm", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "The royal orchard on the outskirts of the city is in ruins. The wooden fence is cut from the inside. Wet footprints lead toward the goblin road, but none lead back."),
-            Line("Mika", "This wasn't an attack from the outside. Look at the cut. Someone from the city cut this from the inside and dragged the scouts out."),
-            Line("Mallory", "Someone wants us to blame the goblins. They are trying to start a war between our people."),
-            Line("Lira", "We should report this to the King immediately. This is high treason."),
-            Line("Mika", "If we report this, the King will just send an army. Then the real traitor wins. We need to find out who benefits before we call anyone an enemy. We need evidence."),
-            Line("Narration", "A deep, guttural war horn echoes across the valley, shaking the leaves from the trees. Goblins have entered the outer farmlands."),
-            Line("Lira", "They're here. Weapons ready!"),
-        ),
-        next_scene="raid",
+            Line("Narration", "The orchard fence is cut from the inside."), 
+            Line("Mika", "Someone wants us to blame the goblins."), 
+            Line("Lira", "We should report this."),
+        ), 
+        (
+            Choice(
+                text="Investigate quietly", 
+                next_scene="raid", 
+                effects={"peace": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "We need evidence."), 
+                    Line("Mallory", "Agreed."),
+                )
+            ), 
+            Choice(
+                text="Report to the King", 
+                next_scene="raid", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Let the army handle it."), 
+                    Line("Lira", "As you wish."),
+                )
+            ),
+        )
     ),
     "raid": Scene(
-        "The Goblin Raid", "farm", ("Mika", "Gorthak", "Mallory"),
+        "The Goblin Raid", "farm", ("Mika", "Gorthak", "Mallory"), 
         (
-            Line("Narration", "A goblin band storms the countryside, setting fire to the wheat fields. Mika shields Mallory, raising her broken spear to fight. But as the smoke clears, she notices the raiders are not warriors, but refugees."),
-            Line("Gorthak", "Our village has nothing left! The blight took our crops, and the king's soldiers poisoned our wells! We came for food, not a war with your people!"),
-            Line("Mallory", "Mika, what should we do? If we attack, we prove we're monsters. If we don't, they'll take everything."),
-            Line("Mika", "Put down your weapons. All of you. We can settle this without bloodshed."),
-            Line("Gorthak", "Why should we trust you? You are human. You are the enemy."),
-            Line("Mika", "Because I'm the only one here who has seen enough death. Fifty-five lifetimes of it. I'm not looking for more."),
-            Line("Narration", "Mika drops her weapon to the mud. The silence that follows is deafening. Gorthak stares at her, bewildered by her courage."),
-        ),
+            Line("Narration", "Goblins storm the countryside."), 
+            Line("Gorthak", "Our village is starving!"), 
+            Line("Mallory", "What do we do?"),
+        ), 
         (
-            Choice("Lower your weapon and hear them out", "treaty", {"peace": 1, "bond": 1}),
-            Choice("Disarm the raiders and force them to retreat", "treaty", {"resolve": 1}),
-        ),
+            Choice(
+                text="Hear them out", 
+                next_scene="treaty", 
+                effects={"peace": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Put down your weapons."), 
+                    Line("Gorthak", "You are strange."),
+                )
+            ), 
+            Choice(
+                text="Attack", 
+                next_scene="treaty", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Drive them back!"), 
+                    Line("Gorthak", "We will remember this!"),
+                )
+            ),
+        )
     ),
     "treaty": Scene(
-        "A Language of Understanding", "throne", ("Gorthak", "Mika", "Mallory"),
+        "A Language of Understanding", "throne", ("Gorthak", "Mika", "Mallory"), 
         (
-            Line("Narration", "Once the danger passes, Mika forces both sides to sit at the negotiating table. The tension in the throne room is thick enough to cut with a knife."),
-            Line("Gorthak", "Give our people a fair chance, and we will stand between Vallhelm and its enemies. We are warriors, not thieves. We want peace."),
-            Line("King Galvath", "You expect me to ally with goblins? They have raided our lands for generations! My father died fighting them!"),
-            Line("Mika", "And you expect me to fight for a kingdom that would let children starve over a grudge? A treaty is only worth something if we keep choosing to honor it. If you fight them now, you're no better than the Demon Lord."),
-            Line("Mallory", "Mika is right, Father. The real enemy is at our borders. We cannot afford infighting. We need Gorthak's army."),
-            Line("Narration", "King Galvath, humbled by his daughter's wisdom and Mika's unyielding resolve, finally relents. He signs the treaty with a heavy hand."),
-            Line("Gorthak", "You are a strange human, Mika. You fight like a demon, but you speak like an angel."),
-        ),
+            Line("Narration", "Mika forces both sides to negotiate."), 
+            Line("Gorthak", "Give us a chance."), 
+            Line("King Galvath", "Ally with goblins?"),
+        ), 
         (
-            Choice("Welcome the goblins as neighbors", "goblin_home", {"peace": 1, "bond": 1}),
-            Choice("Accept only a cautious truce", "goblin_home", {"resolve": 1}),
-        ),
+            Choice(
+                text="Push for peace", 
+                next_scene="goblin_home", 
+                effects={"peace": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "We need them."), 
+                    Line("Gorthak", "You speak like an angel."),
+                )
+            ), 
+            Choice(
+                text="Suggest a truce", 
+                next_scene="goblin_home", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Only a truce."), 
+                    Line("Gorthak", "Cautious."),
+                )
+            ),
+        )
     ),
     "goblin_home": Scene(
-        "A Village at the Edge", "farm", ("Gorthak", "Mika", "Mallory"),
+        "A Village at the Edge", "farm", ("Gorthak", "Mika", "Mallory"), 
         (
-            Line("Narration", "Mika follows Gorthak to Crag-Vale, a goblin village nestled in the jagged mountains. It is a ruin of empty granaries, poisoned wells, and crying children. The smell of rot is overwhelming."),
-            Line("Gorthak", "We did not raid your farms until the blight took ours. We were desperate. We are dying."),
-            Line("Mika", "Then we have been fighting over the same wound. Someone poisoned your wells, cut our fences, and killed our scouts. They wanted this war."),
-            Line("Narration", "A sudden whistle cuts through the air. An arrow strikes the ground between them, vibrating with force."),
-            Line("Mika", "Look at the shaft. It bears the king's seal."),
-            Line("Gorthak", "The king's seal... Why would he attack his own village?"),
-            Line("Mika", "He wouldn't. This is a forgery. There is a traitor in the court, pulling the strings."),
-        ),
-        next_scene="shadow",
+            Line("Narration", "Mika visits the goblin village."), 
+            Line("Gorthak", "We were desperate."), 
+            Line("Mika", "Someone poisoned your wells."),
+        ), 
+        (
+            Choice(
+                text="Sympathize", 
+                next_scene="shadow", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "We'll fix this."), 
+                    Line("Gorthak", "Thank you."),
+                )
+            ), 
+            Choice(
+                text="Demand answers", 
+                next_scene="shadow", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Who did this?"), 
+                    Line("Gorthak", "We don't know!"),
+                )
+            ),
+        )
     ),
     "shadow": Scene(
-        "The Demon Lord's Shadow", "battle", ("Mika", "Mallory", "Gorthak"),
+        "The Demon Lord's Shadow", "battle", ("Mika", "Mallory", "Gorthak"), 
         (
-            Line("Narration", "The Demon Lord's forces gather at the border. A massive army of dark knights, wraiths, and fire-breathing beasts stretches across the horizon, blotting out the sun."),
-            Line("Narration", "Knights, mages, and goblins stand shoulder to shoulder, preparing to defend Vallhelm together. The air smells of ozone, ash, and fear."),
-            Line("Mallory", "You do not have to face the whole army by yourself. We are with you. Vallhelm is with you."),
-            Line("Mika", "I know. I just need to remember that when the fighting starts. Fear makes people do terrible things. But it can also make them brave."),
-            Line("Gorthak", "My people will hold the left flank. Show them the strength of a champion, Maid."),
-            Line("Mika", "I'll show them that even a maid can stand her ground. Let's send these shadows back to the abyss."),
-        ),
+            Line("Narration", "The Demon Lord's army gathers."), 
+            Line("Mallory", "We are with you."), 
+            Line("Mika", "Let's end this."),
+        ), 
         (
-            Choice("Take the vanguard alone", "war_council", {"resolve": 1}),
-            Choice("Make a plan with every ally", "war_council", {"bond": 1, "peace": 1}),
-        ),
+            Choice(
+                text="Lead together", 
+                next_scene="war_council", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "We fight as one."), 
+                    Line("Gorthak", "For Vallhelm!"),
+                )
+            ), 
+            Choice(
+                text="Lead alone", 
+                next_scene="war_council", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I'll handle this."), 
+                    Line("Mallory", "Be careful."),
+                )
+            ),
+        )
     ),
-    # ==========================================
-    # ARC III - THE PRICE OF MIRACLES
-    # ==========================================
     "war_council": Scene(
-        "The Empty Place at Council", "throne", ("King Galvath", "Mallory", "Mika", "Gorthak"),
+        "The Empty Place at Council", "throne", ("King Galvath", "Mallory", "Mika", "Gorthak"), 
         (
-            Line("Narration", "Before the war council can agree on a plan, the king's maps are found covered in black ash. Every road leads to the same ruined valley, a death trap."),
-            Line("King Galvath", "The enemy is steering us toward the north. It's a trap. We have no choice but to spring it."),
-            Line("Mallory", "Then we choose the ground together. Mika is not a weapon we point at it. We fight as one, or we don't fight at all."),
-            Line("Mika", "If we're walking into a trap, we make sure we spring it on our terms. We use the valley's terrain to our advantage."),
-            Line("Narration", "From beyond the windows comes an answer in a voice older than the kingdom. A dark, rumbling laughter that shakes the very foundations of the palace."),
-            Line("Mika", "It's time. We've run out of time to plan."),
-        ),
-        next_scene="sacrifice",
+            Line("Narration", "Maps covered in ash."), 
+            Line("King Galvath", "It's a trap."), 
+            Line("Mallory", "We fight together."),
+        ), 
+        (
+            Choice(
+                text="Plan together", 
+                next_scene="sacrifice", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "We use the terrain."), 
+                    Line("Mallory", "Smart."),
+                )
+            ), 
+            Choice(
+                text="Charge in", 
+                next_scene="sacrifice", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "We attack now."), 
+                    Line("King Galvath", "Reckless!"),
+                )
+            ),
+        )
     ),
     "sacrifice": Scene(
-        "The Cost of Victory", "battle", ("Mika", "Mallory", "Lira"),
+        "The Cost of Victory", "battle", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "The battle is brutal. The valley runs red. The allied forces are pushed to the brink, but they hold the line. The battle breaks the enemy's advance, but at a terrible cost."),
-            Line("Narration", "Mika spends everything she has to keep Mallory and the defenders alive. She channels the raw, unrefined magic of the summoning circle."),
-            Line("Mika", "Mallory! Get behind me!"),
-            Line("Narration", "A blinding flash of light erupts from Mika's body, consuming the remaining shadow beasts. The blast levels the valley. When the light fades, Mika collapses into the mud."),
-            Line("Mallory", "Mika! Stay with us. Please. Don't close your eyes! I can't lose you!"),
-            Line("Lira", "The healers are coming! Hold on, Mika!"),
-            Line("Narration", "The light fades from Mika's eyes. For a time, the palace believes its quietest hero is gone. The cycle has claimed another life."),
-        ),
-        next_scene="grief",
+            Line("Narration", "The battle is brutal."), 
+            Line("Mika", "Get behind me!"), 
+            Line("Narration", "Mika collapses."),
+        ), 
+        (
+            Choice(
+                text="Hold on for them", 
+                next_scene="grief", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mallory", "Stay with us!"), 
+                    Line("Narration", "Mika fades."),
+                )
+            ), 
+            Choice(
+                text="Let go", 
+                next_scene="grief", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I'm sorry..."), 
+                    Line("Narration", "She is gone."),
+                )
+            ),
+        )
     ),
     "grief": Scene(
-        "After the Battle", "infirmary", ("Mallory", "Lira"),
+        "After the Battle", "infirmary", ("Mallory", "Lira"), 
         (
-            Line("Narration", "Vallhelm mourns. The kingdom is saved, but the champion is gone. The capital is draped in black banners. Lira, once Mallory's steadfast guard, helps the princess carry on."),
-            Line("Lira", "You should not have to hold all this grief alone, Your Highness. You haven't left her side in days. You need to eat."),
-            Line("Mallory", "I promised her she wouldn't be alone. I failed her. I couldn't protect her. She died for us."),
-            Line("Lira", "She protected us. And she would want you to keep living. She wouldn't want you to waste away in this room. Let me help you."),
-            Line("Mallory", "Then stay beside me. And when Mika comes home, we will tell her together."),
-            Line("Lira", "When she comes home. Not if. When."),
-        ),
-        next_scene="lira_maid",
+            Line("Narration", "Vallhelm mourns."), 
+            Line("Lira", "You must eat."), 
+            Line("Mallory", "I failed her."),
+        ), 
+        (
+            Choice(
+                text="Comfort her", 
+                next_scene="lira_maid", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Lira", "I'm here."), 
+                    Line("Mallory", "Thank you."),
+                )
+            ), 
+            Choice(
+                text="Leave her be", 
+                next_scene="lira_maid", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Lira", "As you wish."), 
+                    Line("Mallory", "..."),
+                )
+            ),
+        )
     ),
     "lira_maid": Scene(
-        "The New Maid", "infirmary", ("Mallory", "Lira"),
+        "The New Maid", "infirmary", ("Mallory", "Lira"), 
         (
-            Line("Narration", "Grief makes the days blur. To keep the palace running and to keep Mallory from drowning in sorrow, Lira asks to serve as her personal maid until Mika can return."),
-            Line("Mallory", "It is not a replacement. I need help, and I trust you. You are my anchor in this storm."),
-            Line("Lira", "I will wear the apron, Your Highness. But I will never pretend to be Mika. She is one of a kind. She is a hero."),
-            Line("Mallory", "I know. She would be furious if we replaced her. She'd probably throw a bucket of soapy water at us."),
-            Line("Narration", "Mallory laughs for the first time in weeks, though it is tinged with sadness. She pins Mika's pale ribbon beside the appointment order."),
-            Line("Narration", "The memorial candle gutters, though every window is shut tight. A cold breeze sweeps through the room."),
-            Line("Mallory", "I miss her, Lira. I miss her so much it hurts to breathe."),
-        ),
-        next_scene="return",
+            Line("Narration", "Lira becomes the maid."), 
+            Line("Mallory", "It's not a replacement."), 
+            Line("Lira", "I understand."),
+        ), 
+        (
+            Choice(
+                text="Accept Lira", 
+                next_scene="return", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Lira", "I'll do my best."), 
+                    Line("Mallory", "I know."),
+                )
+            ), 
+            Choice(
+                text="Resent Lira", 
+                next_scene="return", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mallory", "It hurts."), 
+                    Line("Lira", "I'm sorry."),
+                )
+            ),
+        )
     ),
-    # ==========================================
-    # ARC IV - THE SPACE BETWEEN US
-    # ==========================================
     "return": Scene(
-        "The Return", "dawn", ("Mika", "Mallory", "Lira"),
+        "The Return", "dawn", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "At the garden memorial, Mallory and Lira speak to Mika as if she can still hear them. A soft, golden glow gathers around the fragments of her soul."),
-            Line("Mallory", "Please... just one more miracle. Just one more."),
-            Line("Narration", "Mika's body, laid upon the stone altar, begins to glow with a warm, blinding light. The fragments of her soul pull together. Her fingers twitch. Her eyes flutter open."),
-            Line("Mika", "Mallory...? Lira...? I'm all right. I could feel how much you wanted me back."),
-            Line("Mallory", "You are home. This time, you do not have to be alone. We're here."),
-            Line("Mika", "It was dark. So dark. But I heard your voice calling me. It was like a lighthouse."),
-            Line("Lira", "Welcome back, Maid. We kept your place warm."),
-        ),
+            Line("Narration", "A soft glow."), 
+            Line("Mika", "I'm back."), 
+            Line("Mallory", "You are home."),
+        ), 
         (
-            Choice("Let them see how much you missed them", "jealousy", {"bond": 1}),
-            Choice("Promise to help keep Vallhelm safe", "jealousy", {"resolve": 1}),
-        ),
+            Choice(
+                text="Embrace them", 
+                next_scene="jealousy", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I missed you."), 
+                    Line("Mallory", "We missed you too."),
+                )
+            ), 
+            Choice(
+                text="Be distant", 
+                next_scene="jealousy", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Thanks."), 
+                    Line("Mallory", "Mika?"),
+                )
+            ),
+        )
     ),
     "jealousy": Scene(
-        "The Place Beside the Princess", "moon", ("Mika", "Mallory", "Lira"),
+        "The Place Beside the Princess", "moon", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "A servant mistakenly calls Lira the princess's 'new maid' in passing. Mika's smile falters. Lira is wearing the very apron Mika used to fold each morning."),
-            Line("Mika", "You found someone to take my place before I even came back. I was gone for five minutes. Well, a few weeks."),
-            Line("Narration", "The garden's pale revival light dims. Under Mika's calm voice, a familiar emptiness opens: fifty-five goodbyes, and now the fear that home has moved on without her."),
-            Line("Mika", "I saved this world. I died for it. Why does it feel as if I have already been erased from it?"),
-            Line("Mallory", "Mika, please. Tell me what you heard. It's not what you think. Lira was just helping me survive."),
-            Line("Mika", "I don't even know what to think anymore. It always ends the same way."),
-        ),
+            Line("Narration", "A servant calls Lira the new maid."), 
+            Line("Mika", "You replaced me."), 
+            Line("Mallory", "No."),
+        ), 
         (
-            Choice("Admit you are terrified of being replaced", "confrontation", {"bond": 2}),
-            Choice("Hide the hurt and ask about palace security", "confrontation", {"resolve": 1, "bond": -1}),
-        ),
+            Choice(
+                text="Talk it out", 
+                next_scene="confrontation", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I was scared."), 
+                    Line("Mallory", "I'm sorry."),
+                )
+            ), 
+            Choice(
+                text="Lash out", 
+                next_scene="confrontation", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "You're all the same."), 
+                    Line("Mallory", "Please!"),
+                )
+            ),
+        )
     ),
     "confrontation": Scene(
-        "The Words Left Unsaid", "archive", ("Mika", "Mallory", "Lira"),
+        "The Words Left Unsaid", "archive", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Mika", "When I heard 'new maid,' it felt like the last place in the world that was mine disappeared. Like I was just a ghost."),
-            Line("Mallory", "I chose Lira to help me survive the grief, not to erase you. I should have told you myself. I'm sorry."),
-            Line("Lira", "I wanted to keep your place warm. I never wanted to stand in it. I'm sorry, Mika. I'm not trying to steal your life."),
-            Line("Mika", "I know you didn't mean to hurt me. But it did hurt. I've lost everyone fifty-five times over. I'm terrified of being forgotten."),
-            Line("Narration", "A window slams shut though there is no wind. An ink-black handprint appears on the inside of the glass, smoking slightly."),
-            Line("Mika", "Something in this palace wants us to doubt each other. It's feeding on our fear. We can't let it win."),
-        ),
-        next_scene="reconciliation",
+            Line("Narration", "An ink-black handprint."), 
+            Line("Mika", "Something is wrong."), 
+            Line("Lira", "We must be careful."),
+        ), 
+        (
+            Choice(
+                text="Unite", 
+                next_scene="reconciliation", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "We can't let it win."), 
+                    Line("Mallory", "Together."),
+                )
+            ), 
+            Choice(
+                text="Blame them", 
+                next_scene="reconciliation", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "This is your fault."), 
+                    Line("Mallory", "Mika!"),
+                )
+            ),
+        )
     ),
     "reconciliation": Scene(
-        "The Ribbon Returned", "garden", ("Mika", "Mallory", "Lira"),
+        "The Ribbon Returned", "garden", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "Lira places Mika's pale ribbon on the table instead of putting it on. She waits for Mika to decide what it means, a gesture of ultimate respect."),
-            Line("Mallory", "I want both of you here. Not as copies of one another—as yourselves. You both mean the world to me."),
-            Line("Mika", "I was scared. I still am. But I don't want fear choosing for me. I don't want to push you away."),
-            Line("Narration", "Mika picks up the ribbon and ties it back into her hair. The garden lanterns flare to life one by one, pushing back the darkness."),
-            Line("Mika", "I'm not going anywhere. And I'm not going to let a little jealousy ruin this. We're a team."),
-            Line("Lira", "Agreed. We are stronger together."),
-        ),
-        next_scene="trio",
+            Line("Narration", "Lira places the ribbon down."), 
+            Line("Mallory", "We want you here."), 
+            Line("Mika", "I was scared."),
+        ), 
+        (
+            Choice(
+                text="Tie the ribbon", 
+                next_scene="trio", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I'm staying."), 
+                    Line("Lira", "Good."),
+                )
+            ), 
+            Choice(
+                text="Leave it", 
+                next_scene="trio", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I need time."), 
+                    Line("Mallory", "Okay."),
+                )
+            ),
+        )
     ),
     "trio": Scene(
-        "Three Places at the Table", "garden", ("Mika", "Mallory", "Lira"),
+        "Three Places at the Table", "garden", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "Mika returns to the household by choice. Mallory keeps Lira as her maid and Mika takes charge of the palace staff; Lira remains the princess's trusted guard and closest confidante."),
-            Line("Lira", "No one here needs to disappear for someone else to belong. We're a team. A weird, chaotic team."),
-            Line("Mika", "Then let us keep the table wide enough for all of us."),
-            Line("Mallory", "Three places at the table. Three hearts. One home."),
-            Line("Narration", "For the first time in weeks, the palace feels like a place of warmth, rather than a fortress under siege."),
-        ),
-        next_scene="assassination",
+            Line("Narration", "A new household."), 
+            Line("Lira", "A team."), 
+            Line("Mika", "A family."),
+        ), 
+        (
+            Choice(
+                text="Celebrate", 
+                next_scene="assassination", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Let's eat!"), 
+                    Line("Mallory", "Yes!"),
+                )
+            ), 
+            Choice(
+                text="Stay quiet", 
+                next_scene="assassination", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Okay."), 
+                    Line("Lira", "..."),
+                )
+            ),
+        )
     ),
-    # ==========================================
-    # ARC V - KNIVES IN THE DARK
-    # ==========================================
     "assassination": Scene(
-        "A Threat in the Garden", "moon", ("Lira", "Mika", "Mallory"),
+        "A Threat in the Garden", "moon", ("Lira", "Mika", "Mallory"), 
         (
-            Line("Narration", "A hidden faction tries to strike at the royal family during a moonlit walk. Lira spots the glint of a blade first, a flash of silver in the bushes."),
-            Line("Lira", "Mika, down! Assassin on the east wall!"),
-            Line("Narration", "Mika throws herself in front of Mallory, catching a poisoned dart on her armored sleeve. The three women fight back-to-back, a perfect unit."),
-            Line("Lira", "The palace is safer when we trust each other enough to share the watch."),
-            Line("Mika", "Agreed. A home is not guarded by one person alone."),
-            Line("Mallory", "Behind you! Watch your left!"),
-        ),
+            Line("Narration", "An assassin strikes."), 
+            Line("Lira", "Down!"), 
+            Line("Mika", "I got her!"),
+        ), 
         (
-            Choice("Trust Lira to lead the response", "conspiracy", {"bond": 1}),
-            Choice("Use your gifts to uncover the plot", "conspiracy", {"resolve": 1}),
-        ),
+            Choice(
+                text="Protect them", 
+                next_scene="conspiracy", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Stay behind me."), 
+                    Line("Mallory", "Thank you."),
+                )
+            ), 
+            Choice(
+                text="Go on the offensive", 
+                next_scene="conspiracy", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I'll hunt them down."), 
+                    Line("Lira", "Careful!"),
+                )
+            ),
+        )
     ),
     "conspiracy": Scene(
-        "The Hand Behind the Knife", "archive", ("Mika", "Mallory", "Lira"),
+        "The Hand Behind the Knife", "archive", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "A seized assassin carries the same false royal seal as the arrow at Crag-Vale. The plot was designed to make Vallhelm turn on its allies."),
-            Line("Lira", "The trail leads below the old archive. Someone has been reading the prophecy before we have. Someone in the court."),
-            Line("Mallory", "Then we go together. No one is bait."),
-            Line("Mika", "Wait... I hear something behind the door. Chanting."),
-            Line("Narration", "A locked door opens from the other side. Standing there is Councilman Vane, holding a glowing, dark artifact, his eyes clouded with dark magic."),
-            Line("Mika", "You. You're the one who poisoned the wells. You killed our scouts. Why?"),
-        ),
-        next_scene="healing",
+            Line("Narration", "Councilman Vane revealed."), 
+            Line("Mika", "Why?"), 
+            Line("Vane", "For the glory."),
+        ), 
+        (
+            Choice(
+                text="Arrest him", 
+                next_scene="healing", 
+                effects={"peace": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Take him away."), 
+                    Line("Mallory", "Justice."),
+                )
+            ), 
+            Choice(
+                text="Execute him", 
+                next_scene="healing", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "You die now."), 
+                    Line("Lira", "Mika, no!"),
+                )
+            ),
+        )
     ),
     "healing": Scene(
-        "The Healing Kitchen", "infirmary", ("Mika", "Mallory", "Lira"),
+        "The Healing Kitchen", "infirmary", ("Mika", "Mallory", "Lira"), 
         (
-            Line("Narration", "The conspirators are stopped, but the battle leaves Mika's old wounds burning. She tries to hide the tremor in her hands from the others."),
-            Line("Mallory", "You don't have to be useful to deserve rest. Let me bandage that."),
-            Line("Mika", "I know that when I'm thinking clearly. I forget it when everyone looks frightened."),
-            Line("Lira", "Then tonight, we keep watch while you heal. You've earned a moment of peace."),
-            Line("Narration", "Mallory gently cleans Mika's wounds, humming a soft lullaby. Mika finally allows herself to relax, leaning into Mallory's touch."),
-            Line("Mika", "Thank you. Both of you. For making me feel human again."),
-        ),
-        next_scene="prophecy",
+            Line("Narration", "Mika's wounds burn."), 
+            Line("Mallory", "Rest."), 
+            Line("Mika", "I can't."),
+        ), 
+        (
+            Choice(
+                text="Accept help", 
+                next_scene="prophecy", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Okay."), 
+                    Line("Mallory", "Good."),
+                )
+            ), 
+            Choice(
+                text="Push them away", 
+                next_scene="prophecy", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Leave me."), 
+                    Line("Lira", "..."),
+                )
+            ),
+        )
     ),
     "prophecy": Scene(
-        "The Prophecy Unfolds", "archive", ("Lira", "Mika", "Mallory"),
+        "The Prophecy Unfolds", "archive", ("Lira", "Mika", "Mallory"), 
         (
-            Line("Narration", "The old book reveals one final warning: a darkness older than the Demon Lord is drawing near. The true enemy approaches."),
-            Line("Lira", "I found a way to focus the magic without asking Mika to carry it all. We can channel it together. A shared burden."),
-            Line("Mallory", "Then we face the storm as a family, with the whole kingdom behind us."),
-            Line("Mika", "Fifty-five times I did this alone. Not this time."),
-            Line("Narration", "The ground trembles. The black winter has arrived."),
-        ),
-        next_scene="winter_vigil",
+            Line("Narration", "The final warning."), 
+            Line("Lira", "We can share the burden."), 
+            Line("Mallory", "Together."),
+        ), 
+        (
+            Choice(
+                text="Accept the burden", 
+                next_scene="winter_vigil", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Let's do it."), 
+                    Line("Mallory", "Yes."),
+                )
+            ), 
+            Choice(
+                text="Carry it alone", 
+                next_scene="winter_vigil", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "No, I'll do it."), 
+                    Line("Lira", "Stubborn."),
+                )
+            ),
+        )
     ),
     "winter_vigil": Scene(
-        "The Longest Night", "winter", ("Mika", "Mallory", "Lira", "Gorthak"),
+        "The Longest Night", "winter", ("Mika", "Mallory", "Lira", "Gorthak"), 
         (
-            Line("Narration", "On the eve of the black winter, the four keep watch at the garden fountain. The sky is an inky void, devoid of stars."),
-            Line("Narration", "A second shadow stands behind Mika in the water. It mimics her every move, a perfect, horrifying copy."),
-            Line("Shadow", "Fifty-five times you died alone. The fifty-sixth will end the pattern. You will break."),
-            Line("Mika", "You're wrong. This time, I have people who know my name."),
-            Line("Shadow", "They will fall. Just like all the others. You are a curse."),
-            Line("Narration", "The shadow smiles with Mika's own face and vanishes beneath the ice."),
-        ),
-        next_scene="storm",
+            Line("Narration", "The black winter."), 
+            Line("Shadow", "You will break."), 
+            Line("Mika", "No, I won't."),
+        ), 
+        (
+            Choice(
+                text="Stand strong", 
+                next_scene="storm", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I have people who know my name."), 
+                    Line("Mallory", "We are here."),
+                )
+            ), 
+            Choice(
+                text="Doubt yourself", 
+                next_scene="storm", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "Maybe I will."), 
+                    Line("Lira", "Don't say that."),
+                )
+            ),
+        )
     ),
-    # ==========================================
-    # ARC VI - THE FIFTY-SIXTH DAWN
-    # ==========================================
     "storm": Scene(
-        "The Gathering Storm", "winter", ("Mallory", "Mika", "Lira"),
+        "The Gathering Storm", "winter", ("Mallory", "Mika", "Lira"), 
         (
-            Line("Narration", "Winter turns the sky black. Beyond the walls, a vast shadow opens over Vallhelm. The final battle is at hand."),
-            Line("Mika", "Fifty-six lives, and I finally know what I want to protect."),
-            Line("Lira", "We are with you. The kingdom is with you."),
-            Line("Mallory", "Whatever happens out there... I love you, Mika. I should have said it sooner."),
-            Line("Mika", "I love you too. Let's end this."),
-        ),
-        next_scene="final_battle",
+            Line("Narration", "The final battle."), 
+            Line("Mika", "I know what to protect."), 
+            Line("Mallory", "I love you."),
+        ), 
+        (
+            Choice(
+                text="Say I love you too", 
+                next_scene="final_battle", 
+                effects={"bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "I love you too."), 
+                    Line("Mallory", "Let's go."),
+                )
+            ), 
+            Choice(
+                text="Stay silent", 
+                next_scene="final_battle", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "..."), 
+                    Line("Mallory", "Mika?"),
+                )
+            ),
+        )
     ),
     "final_battle": Scene(
-        "The Final Battle", "battle", ("Mika", "Mallory", "Lira", "Shadow"),
+        "The Final Battle", "battle", ("Mika", "Mallory", "Lira", "Shadow"), 
         (
-            Line("Narration", "The sky cracks open. The ancient shadow descends, a massive entity of writhing darkness and glowing red eyes."),
-            Line("Shadow", "You are nothing but a servant. You cannot defeat me."),
-            Line("Mika", "I am a servant. But I am also a hero. And this is my home!"),
-            Line("Narration", "Mika raises her weapon, channeling all her power into a single strike. Mallory and Lira stand beside her, combining their magic."),
-            Line("Mallory", "Together!"),
-        ),
+            Line("Narration", "The shadow descends."), 
+            Line("Shadow", "You cannot win."), 
+            Line("Mika", "I am a hero!"),
+        ), 
         (
-            Choice("Stand with Mallory, Lira, and every ally", "ending_gate", {"family_final": 1, "bond": 1}),
-            Choice("Take the final strike on yourself to protect them", "ending_gate", {"resolve": 1}),
-        ),
+            Choice(
+                text="Fight together", 
+                next_scene="ending_gate", 
+                effects={"family_final": 1, "bond": 1, "reputation": 1}, 
+                outcome_lines=(
+                    Line("Mika", "Together!"), 
+                    Line("Shadow", "Impossible!"),
+                )
+            ), 
+            Choice(
+                text="Sacrifice yourself", 
+                next_scene="ending_gate", 
+                effects={"resolve": 1, "reputation": -1}, 
+                outcome_lines=(
+                    Line("Mika", "I'll do it alone!"), 
+                    Line("Mallory", "No!"),
+                )
+            ),
+        )
     ),
-    "ending_home": Scene(
-        "A New Dawn", "dawn", ("Mika", "Mallory", "Lira"),
-        (
-            Line("Narration", "Together, they break the ancient shadow. The entity shatters into a million pieces of light. Mika falls to her knees, exhausted."),
-            Line("Mallory", "You came back. You are loved, Mika. You are home."),
-            Line("Mika", "As long as a fragment of me remains, I will always find my way back to you."),
-            Line("Lira", "The dawn is breaking. We actually did it."),
-            Line("Narration", "The people of Vallhelm cheer as the sun rises over the horizon. The fifty-sixth life is finally her own."),
-            Line("Mika", "This time, I am staying home. Forever."),
-        ),
-        ending=True,
-    ),
-    "ending_peace": Scene(
-        "The Kingdom United", "dawn", ("Gorthak", "Mika", "Mallory"),
-        (
-            Line("Narration", "The goblin alliance turns the tide. Together, the people of Vallhelm shatter the darkness and keep their promise of peace."),
-            Line("Gorthak", "Today we fought as neighbors. Let us live that way tomorrow."),
-            Line("Mika", "I used to think protecting people meant standing in front of them. Now I know it can mean standing beside them."),
-            Line("Narration", "A new era of unity begins. Goblins and humans rebuild the kingdom together, and Mika stands at the center of it all."),
-            Line("Mallory", "You brought us together, Mika. You saved us all."),
-        ),
-        ending=True,
-    ),
-    "ending_cycle": Scene(
-        "The Fifty-Sixth Return", "dawn", ("Mika", "Mallory", "Lira"),
-        (
-            Line("Narration", "Mika meets the darkness alone and wins, though the familiar cycle claims its price once more."),
-            Line("Narration", "In the quiet that follows, Mallory and Lira refuse to let her go. Their voices guide her back to the garden."),
-            Line("Mika", "I will try again. Next time, I will let you stand beside me."),
-            Line("Narration", "She closes her eyes. The cycle continues, but a seed of hope has been planted."),
-            Line("Mallory", "I'll be waiting for you. Always."),
-        ),
-        ending=True,
-    ),
+    "ending_home": Scene("A New Dawn", "dawn", ("Mika", "Mallory", "Lira"), (Line("Narration", "The shadow breaks."), Line("Mallory", "You are home."), Line("Mika", "Forever.")), ending=True),
+    "ending_peace": Scene("The Kingdom United", "dawn", ("Gorthak", "Mika", "Mallory"), (Line("Narration", "The goblin alliance holds."), Line("Gorthak", "Neighbors."), Line("Mika", "Beside them.")), ending=True),
+    "ending_cycle": Scene("The Fifty-Sixth Return", "dawn", ("Mika", "Mallory", "Lira"), (Line("Narration", "Mika wins, but the cycle continues."), Line("Mika", "Next time."), Line("Mallory", "Always.")), ending=True),
 }
 
 CHAPTERS = (
     Chapter("01", "The Summoning", "summoning", ARCS[0]), Chapter("02", "The Wrong Hero", "first_impression", ARCS[0]),
     Chapter("03", "A Cup Before the Storm", "coffee", ARCS[0]), Chapter("04", "The City Market", "market", ARCS[0]),
     Chapter("05", "The Knight's Mistake", "knight_mistake", ARCS[0]), Chapter("06", "The Ancient Record", "archive", ARCS[0]),
-    
     Chapter("07", "Sparring with Lira", "training", ARCS[1]), Chapter("08", "A Quiet Afternoon", "garden", ARCS[1]),
     Chapter("09", "Tracks at the Orchard", "goblin_warning", ARCS[1]), Chapter("10", "The Goblin Raid", "raid", ARCS[1]),
     Chapter("11", "A Language of Understanding", "treaty", ARCS[1]), Chapter("12", "A Village at the Edge", "goblin_home", ARCS[1]),
-    
     Chapter("13", "The Demon Lord's Shadow", "shadow", ARCS[2]), Chapter("14", "The Empty Place at Council", "war_council", ARCS[2]),
     Chapter("15", "The Cost of Victory", "sacrifice", ARCS[2]), Chapter("16", "After the Battle", "grief", ARCS[2]),
-    Chapter("17", "The New Maid", "lira_maid", ARCS[2]),
-    
-    Chapter("18", "The Return", "return", ARCS[3]), Chapter("19", "The Place Beside the Princess", "jealousy", ARCS[3]),
-    Chapter("20", "The Words Left Unsaid", "confrontation", ARCS[3]), Chapter("21", "The Ribbon Returned", "reconciliation", ARCS[3]),
-    Chapter("22", "Three Places at the Table", "trio", ARCS[3]),
-    
+    Chapter("17", "The New Maid", "lira_maid", ARCS[2]), Chapter("18", "The Return", "return", ARCS[3]),
+    Chapter("19", "The Place Beside the Princess", "jealousy", ARCS[3]), Chapter("20", "The Words Left Unsaid", "confrontation", ARCS[3]),
+    Chapter("21", "The Ribbon Returned", "reconciliation", ARCS[3]), Chapter("22", "Three Places at the Table", "trio", ARCS[3]),
     Chapter("23", "A Threat in the Garden", "assassination", ARCS[4]), Chapter("24", "The Hand Behind the Knife", "conspiracy", ARCS[4]),
     Chapter("25", "The Healing Kitchen", "healing", ARCS[4]), Chapter("26", "The Prophecy Unfolds", "prophecy", ARCS[4]),
-    Chapter("27", "The Longest Night", "winter_vigil", ARCS[4]),
-    
-    Chapter("28", "The Gathering Storm", "storm", ARCS[5]), Chapter("29", "The Final Battle", "final_battle", ARCS[5]),
-    Chapter("30", "A New Dawn", "ending_home", ARCS[5]), Chapter("31", "The Kingdom United", "ending_peace", ARCS[5]),
-    Chapter("32", "The Fifty-Sixth Return", "ending_cycle", ARCS[5]),
+    Chapter("27", "The Longest Night", "winter_vigil", ARCS[4]), Chapter("28", "The Gathering Storm", "storm", ARCS[5]),
+    Chapter("29", "The Final Battle", "final_battle", ARCS[5]), Chapter("30", "A New Dawn", "ending_home", ARCS[5]),
+    Chapter("31", "The Kingdom United", "ending_peace", ARCS[5]), Chapter("32", "The Fifty-Sixth Return", "ending_cycle", ARCS[5]),
 )
 CHAPTER_BY_SCENE = {chapter.scene_id: chapter for chapter in CHAPTERS}
 CHAPTER_MUSIC = {chapter.scene_id: Path("assets") / "chapter_music" / f"chapter_{chapter.key}{'.mp3' if chapter.key == '01' else '.wav'}" for chapter in CHAPTERS}
@@ -615,54 +977,34 @@ class EightBitVoiceOver:
         try:
             if not self._pygame.mixer.get_init():
                 self._pygame.mixer.init(frequency=22050, size=-16, channels=1)
-                
-            base_freqs = {
-                "Mika": 600, "Mallory": 500, "Lira": 550,
-                "King Galvath": 200, "Gorthak": 150, "Shadow": 100, "Narration": 350
-            }
+            base_freqs = {"Mika": 600, "Mallory": 500, "Lira": 550, "King Galvath": 200, "Gorthak": 150, "Shadow": 100, "Narration": 350}
             base_freq = base_freqs.get(speaker, 400)
             sample_rate = self._pygame.mixer.get_init()[0]
-            char_duration = 0.035 # 35ms per character
-            
+            char_duration = 0.035 
             samples = array.array("h")
             for char in text:
-                if self._stop_event.is_set():
-                    break
-                
-                if char.isspace():
-                    samples.extend([0] * int(sample_rate * char_duration))
-                    continue
-                    
-                # Modulate pitch slightly for a "speaking" effect
+                if self._stop_event.is_set(): break
+                if char.isspace(): samples.extend([0] * int(sample_rate * char_duration)); continue
                 freq = base_freq + (ord(char) % 30) - 15
                 count = int(sample_rate * char_duration)
-                
                 for i in range(count):
                     time = i / sample_rate
                     val = 1.0 if math.sin(2 * math.pi * freq * time) > 0 else -1.0
                     progress = i / count
                     env = 1.0 if progress < 0.8 else (1.0 - progress) * 5.0
                     samples.append(int(val * env * 6000))
-                    
             if sys.byteorder != "little": samples.byteswap()
             sound = self._pygame.mixer.Sound(buffer=samples.tobytes())
             self._current_sound = sound
             sound.play()
-            
-            # Wait for the sound to finish playing (roughly)
             duration = len(text) * char_duration
             self._stop_event.wait(duration)
             self._current_sound = None
-            
-        except Exception as e:
-            print(f"8-bit voice error: {e}")
+        except Exception as e: print(f"8-bit voice error: {e}")
 
     def speak(self, speaker: str, text: str) -> None:
         if not self.available: return
-        self.stop()
-        self._stop_event.clear()
-        self._requests.put((speaker, text))
-
+        self.stop(); self._stop_event.clear(); self._requests.put((speaker, text))
     def stop(self) -> None:
         self._stop_event.set()
         if self._current_sound:
@@ -671,9 +1013,7 @@ class EightBitVoiceOver:
         while True:
             try: self._requests.get_nowait()
             except queue.Empty: break
-
-    def close(self) -> None:
-        self._requests.put(None)
+    def close(self) -> None: self._requests.put(None)
 
 class Soundboard:
     SAMPLE_RATE = 22050
@@ -719,8 +1059,8 @@ def validate_story() -> int:
     if not STORY: raise ValueError("No scenes.")
     for key, scene in STORY.items():
         for choice in scene.choices:
-            target = ending_for({**{"bond": 0, "peace": 0, "resolve": 0, "family_final": 0}, **choice.effects}) if choice.next_scene == "ending_gate" else choice.next_scene
-            if target not in STORY: raise ValueError(f"Bad link {key}")
+            target = ending_for({**{"bond": 0, "peace": 0, "resolve": 0, "family_final": 0, "reputation": 0}, **choice.effects}) if choice.next_scene == "ending_gate" else choice.next_scene
+            if target and target not in STORY: raise ValueError(f"Bad link {key}")
         if scene.next_scene is not None and scene.next_scene not in STORY: raise ValueError(f"Bad link {key}")
         if not scene.lines: raise ValueError(f"No lines {key}")
     if len(CHAPTERS) != len(STORY): raise ValueError("Chapter mismatch")
@@ -736,7 +1076,12 @@ class VisualNovel:
         
         self.current_scene: str | None = None
         self.line_index = 0
-        self.flags = {"bond": 0, "peace": 0, "resolve": 0, "family_final": 0}
+        self.flags = {"bond": 0, "peace": 0, "resolve": 0, "family_final": 0, "reputation": 0}
+        
+        self.temp_lines: tuple[Line, ...] | None = None
+        self.temp_index: int = 0
+        self.pending_next_scene: str | None = None
+
         self.undo_stack = []
         self.menu = True
         self._canvas_size = (1100, 740)
@@ -773,11 +1118,13 @@ class VisualNovel:
     def _remember(self): self.undo_stack.append(self._snapshot())
     def _restore(self, state):
         self.current_scene = state["current_scene"]; self.line_index = int(state["line_index"]); self.flags = dict(state["flags"]); self.menu = bool(state["menu"]); self.highest_chapter = int(state.get("highest_chapter", 0))
+        self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         if self.music_enabled: self._start_music()
         self.draw()
 
     def new_game(self):
-        self.undo_stack.clear(); self.flags = {"bond": 0, "peace": 0, "resolve": 0, "family_final": 0}; self.highest_chapter = 0
+        self.undo_stack.clear(); self.flags = {"bond": 0, "peace": 0, "resolve": 0, "family_final": 0, "reputation": 0}; self.highest_chapter = 0
+        self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         self._enter_scene("summoning"); self.line_index = 0; self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx("summoning"); self.draw()
 
@@ -804,6 +1151,7 @@ class VisualNovel:
 
     def choose_chapter(self, index: int):
         if not 0 <= index <= self.highest_chapter or index >= len(CHAPTERS): return
+        self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         self._enter_scene(CHAPTERS[index].scene_id); self.line_index = 0; self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx(self.current_scene or ""); self.draw()
 
@@ -846,11 +1194,21 @@ class VisualNovel:
 
     def _speak_current(self, force: bool = False):
         if self.menu or self.current_scene is None or not self.voice_enabled: return
-        key = (self.current_scene, self.line_index)
+        
+        if self.temp_lines:
+            if self.temp_index >= len(self.temp_lines): return
+            line = self.temp_lines[self.temp_index]
+            key = (self.current_scene, "temp", self.temp_index)
+        else:
+            scene = STORY[self.current_scene]
+            line = scene.lines[self.line_index]
+            key = (self.current_scene, self.line_index)
+            
         if key == self._last_spoken and not force: return
         self._last_spoken = key
-        line = STORY[self.current_scene].lines[self.line_index]
-        self.voice.speak(line.speaker, line.text)
+        
+        final_text = resolve_text(line.text, self.flags)
+        self.voice.speak(line.speaker, final_text)
 
     def close(self):
         self.voice.close()
@@ -922,23 +1280,45 @@ class VisualNovel:
 
     def advance(self):
         if self.menu or self.current_scene is None: return
+        
+        if self.temp_lines:
+            self.temp_index += 1
+            if self.temp_index >= len(self.temp_lines):
+                target = self.pending_next_scene
+                self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
+                if target: self._next_scene(target)
+                else: self.menu = True
+            self._speak_current(force=True)
+            self.draw()
+            return
+
         scene = STORY[self.current_scene]
         if scene.choices and self.line_index >= len(scene.lines) - 1: return
         self._remember()
-        if self.line_index < len(scene.lines) - 1: self.line_index += 1
-        elif scene.next_scene is not None: self._next_scene(scene.next_scene)
+        if self.line_index < len(scene.lines) - 1:
+            self.line_index += 1
+        elif scene.next_scene is not None:
+            self._next_scene(scene.next_scene)
         elif scene.ending:
             self.menu = True; self._last_spoken = None
             if self.music_enabled: self._start_music()
         self.draw()
 
     def choose(self, index: int):
-        if self.menu or self.current_scene is None: return
+        if self.menu or self.current_scene is None or self.temp_lines: return
         scene = STORY[self.current_scene]
         if self.line_index < len(scene.lines) - 1 or index >= len(scene.choices): return
         choice = scene.choices[index]; self._remember()
         for name, value in choice.effects.items(): self.flags[name] += value
-        self._next_scene(choice.next_scene); self.draw()
+        
+        if choice.outcome_lines:
+            self.temp_lines = choice.outcome_lines
+            self.temp_index = 0
+            self.pending_next_scene = choice.next_scene
+            self._speak_current(force=True)
+        else:
+            self._next_scene(choice.next_scene)
+        self.draw()
 
     def go_back(self):
         if not self.undo_stack: return
@@ -956,7 +1336,9 @@ class VisualNovel:
         self.root.after(220, self._animate_idle)
 
     def save_game(self):
-        if self.current_scene is None or self.menu: self.messagebox.showinfo(APP_NAME, "Start a story first."); return
+        if self.current_scene is None or self.menu or self.temp_lines:
+            self.messagebox.showinfo(APP_NAME, "Cannot save during an outcome sequence.")
+            return
         path = save_path(); data = {"version": SAVE_VERSION, "current_scene": self.current_scene, "line_index": self.line_index, "flags": self.flags, "highest_chapter": self.highest_chapter}
         try: path.parent.mkdir(parents=True, exist_ok=True); path.write_text(json.dumps(data, indent=2), encoding="utf-8")
         except OSError as error: self.messagebox.showerror(APP_NAME, f"Error:\n{error}"); return
@@ -975,6 +1357,7 @@ class VisualNovel:
         except Exception as error: self.messagebox.showerror(APP_NAME, f"Error loading:\n{error}"); return
         
         self.undo_stack.clear(); self._enter_scene(scene_id); self.line_index = line_index; self.flags = flags; self.highest_chapter = max(highest_chapter, self.highest_chapter)
+        self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx(scene_id); self.draw()
 
@@ -1046,43 +1429,28 @@ class VisualNovel:
 
         if self._character_width_ratio is None:
             reference_path = find_file("Mallory.png")
-            if reference_path is None:
-                print("Char Error: Mallory.png is required to size character sprites.")
-                return
+            if reference_path is None: return
             try:
                 with Image.open(reference_path) as reference:
                     reference = reference.convert("RGBA")
                     bbox = reference.getchannel("A").getbbox()
-                    if bbox:
-                        mallory_width_ratio = (bbox[2] - bbox[0]) / (bbox[3] - bbox[1])
-                    else:
-                        print(f"Char Error: No visible character in {reference_path.name}.")
-                        return
-            except OSError as error:
-                print(f"Char Error {reference_path.name}: {error}")
-                return
+                    if bbox: mallory_width_ratio = (bbox[2] - bbox[0]) / (bbox[3] - bbox[1])
+                    else: return
+            except OSError: return
 
             max_height_ratio = 0
-            character_files = (
-                "Galvath.png", "Gorthak.png", "Lira.png", "Lira_sad.png",
-                "Mallory_sad.png", "Mika.png", "Mika_happy.png", "Mika_sad.png", "shadow.png"
-            )
+            character_files = ("Galvath.png", "Gorthak.png", "Lira.png", "Lira_sad.png", "Mallory_sad.png", "Mika.png", "Mika_happy.png", "Mika_sad.png", "shadow.png")
             for filename in character_files:
                 character_path = find_file(filename)
-                if character_path is None:
-                    continue
+                if character_path is None: continue
                 try:
                     with Image.open(character_path) as character:
                         bbox = character.convert("RGBA").getchannel("A").getbbox()
                         if bbox:
-                            char_width = bbox[2] - bbox[0]
-                            char_height = bbox[3] - bbox[1]
+                            char_width = bbox[2] - bbox[0]; char_height = bbox[3] - bbox[1]
                             max_height_ratio = max(max_height_ratio, char_height / char_width)
-                except OSError as error:
-                    print(f"Char Error {character_path.name}: {error}")
-            if max_height_ratio == 0:
-                print("Char Error: No visible character sprites found.")
-                return
+                except OSError: pass
+            if max_height_ratio == 0: return
             self._character_width_ratio = min(mallory_width_ratio, 1 / max_height_ratio)
 
         max_height = int((ground - 80) * 0.98)
@@ -1125,27 +1493,31 @@ class VisualNovel:
             self.canvas.create_text(width / 2, height * 0.77, text="James Adrian B. Castro", fill="#fff4de", font=("Georgia", 17, "bold"))
             self.canvas.create_text(width / 2, height * 0.83, text="Original soundtrack and lyrics by:", fill="#d8c8aa", font=("Segoe UI", 11))
             self.canvas.create_text(width / 2, height * 0.88, text="James Adrian B. Castro - The Maid of Light", fill="#e6d6b8", font=("Segoe UI", 13, "bold"))
-            self.canvas.create_text(width / 2, height * 0.93, text="Offline generated character voices • Original story adaptation", fill="#c5c0bd", font=("Segoe UI", 9))
             self._button(width / 2 - 110, height * 0.51, 220, 34, "BACK TO TITLE", "menu_back", 10)
-            self._button(width - 163, 14, 135, 34, "SOUND ON" if self.music_enabled else "SOUND OFF", "menu_sound", 9)
             return
 
         if self.chapter_select:
             self.canvas.create_rectangle(0, 62, width, height - 36, fill="#101722", outline="#c4a879", width=1)
             self.canvas.create_text(width / 2, 82, text="CHAPTER SELECT", fill="#edcf88", font=("Georgia", 19, "bold"))
-            self.canvas.create_text(width / 2, 106, text="Complete chapters to unlock what comes next.", fill="#c5c0bd", font=("Segoe UI", 9))
-            button_top = 133; column_gap = 12; column_width = (width - 46 - column_gap * 2) / 3
+            
+            column_gap = 20
+            column_width = (width - 60 - column_gap * 2) / 3
+            
             for column in range(3):
-                x = 18 + column * (column_width + column_gap)
+                x = 30 + column * (column_width + column_gap)
+                button_top = 120 # Reset top position for each column!
+                
                 for arc in (ARCS[column * 2], ARCS[column * 2 + 1]):
                     self.canvas.create_text(x + 4, button_top, anchor="nw", text=arc, fill="#edcf88", font=("Segoe UI", 9, "bold"), width=column_width - 8)
                     button_top += 27
+                    
                     for chapter_index, chapter in enumerate(CHAPTERS):
                         if chapter.arc != arc: continue
                         unlocked = chapter_index <= self.highest_chapter
                         self._button(x, button_top, column_width, 30, f"{chapter.key}  {chapter.title}" if unlocked else f"{chapter.key}  LOCKED", f"chapter_{chapter.key}" if unlocked else "locked", 9)
                         button_top += 35
                     button_top += 5
+                    
             self._button(width / 2 - 105, height - 33, 210, 27, "BACK TO TITLE", "menu_back", 9)
             return
 
@@ -1163,21 +1535,12 @@ class VisualNovel:
         if self.soundtrack_visible:
             self.canvas.create_rectangle(0, 62, width, height - 38, fill="#101722", outline="#c4a879", width=1)
             self.canvas.create_text(width / 2, 85, text="SOUNDTRACK LIST", fill="#edcf88", font=("Georgia", 19, "bold"))
-            self.canvas.create_text(width / 2, 108, text="Click a track to play its music.", fill="#c5c0bd", font=("Segoe UI", 10))
-            
-            columns = 3
-            button_width = (width - 80) / columns
-            button_height = 30
-            
+            columns = 3; button_width = (width - 80) / columns; button_height = 30
             for index, chapter in enumerate(CHAPTERS):
-                col = index % columns
-                row = index // columns
-                x = 40 + col * button_width
-                y = 140 + row * (button_height + 8)
+                col = index % columns; row = index // columns
+                x = 40 + col * button_width; y = 140 + row * (button_height + 8)
                 self._button(x, y, button_width - 10, button_height, f"{chapter.key} - {chapter.title}", f"track_{chapter.key}", 10)
-                
             self._button(width / 2 - 105, height - 43, 210, 30, "BACK TO TITLE", "menu_back", 9)
-            self._button(width - 163, 14, 135, 34, "SOUND ON" if self.music_enabled else "SOUND OFF", "menu_sound", 9)
             return
 
         self.canvas.create_rectangle(0, height * 0.55, width, height, fill="#101722", outline="#c4a879", width=2)
@@ -1225,6 +1588,17 @@ class VisualNovel:
         self.canvas.create_text(24, 13, anchor="nw", text=f"ARC  {chapter.arc}", fill="#e8c779", font=("Segoe UI", 9, "bold"))
         self.canvas.create_text(24, 38, anchor="nw", text=f"CHAPTER {chapter.key}  ·  {chapter.title.upper()}", fill="#f1e5ce", font=("Segoe UI", 11, "bold"))
         
+        # REPUTATION UI
+        rep = self.flags.get("reputation", 0)
+        if rep >= 2:
+            rep_text, rep_color = "GOOD", "#4ade80"
+        elif rep <= -2:
+            rep_text, rep_color = "BAD", "#f87171"
+        else:
+            rep_text, rep_color = "NEUTRAL", "#fbbf24"
+            
+        self.canvas.create_text(24, 55, anchor="nw", text=f"REPUTATION: {rep_text}", fill=rep_color, font=("Segoe UI", 9, "bold"))
+        
         controls = (("CHAPTERS", "control_chapters", 80), ("FX", "control_soundboard", 48), ("VOICE ON" if self.voice_enabled else "VOICE OFF", "control_voice", 78), ("MUSIC", "control_music", 54), ("SAVE", "control_save", 54), ("BACK", "control_back", 54), ("MENU", "control_menu", 54))
         total = sum(button_width for _label, _tag, button_width in controls) + 6 * (len(controls) - 1)
         x = width - total - 14
@@ -1244,18 +1618,33 @@ class VisualNovel:
         # Text Box
         panel_top = height * 0.72 
         self.canvas.create_rectangle(0, panel_top, width, height, fill="#101722", outline="#c4a879", width=2)
-        line = scene.lines[self.line_index]
-        self.canvas.create_text(34, panel_top + 17, anchor="nw", text=line.speaker.upper(), fill="#d9bd82", font=("Segoe UI", 11, "bold"))
-        self.canvas.create_text(34, panel_top + 43, anchor="nw", text=line.text, fill="#f3eee5", font=("Segoe UI", max(12, round(width / 73))), width=width - 68)
         
-        ready_for_choice = bool(scene.choices) and self.line_index == len(scene.lines) - 1
+        if self.temp_lines:
+            active_lines = self.temp_lines
+            active_index = min(self.temp_index, len(active_lines) - 1)
+            line = active_lines[active_index]
+        else:
+            active_lines = scene.lines
+            active_index = min(self.line_index, len(active_lines) - 1)
+            line = active_lines[active_index]
+            
+        final_text = resolve_text(line.text, self.flags)
+        
+        self.canvas.create_text(34, panel_top + 17, anchor="nw", text=line.speaker.upper(), fill="#d9bd82", font=("Segoe UI", 11, "bold"))
+        self.canvas.create_text(34, panel_top + 43, anchor="nw", text=final_text, fill="#f3eee5", font=("Segoe UI", max(12, round(width / 73))), width=width - 68)
+        
+        ready_for_choice = bool(scene.choices) and not self.temp_lines and self.line_index == len(scene.lines) - 1
+        
         if ready_for_choice:
             button_h = min(38, (height - panel_top - 105) / len(scene.choices))
             y = panel_top + 105
             for index, choice in enumerate(scene.choices):
                 self._button(34, y + index * (button_h + 7), width - 68, button_h, f"{index + 1}. {choice.text}", f"choice_{index}", 12)
         else:
-            label = "RETURN TO TITLE" if (scene.ending and self.line_index == len(scene.lines) - 1) else "CONTINUE  >"
+            if self.temp_lines and self.temp_index == len(self.temp_lines) - 1:
+                label = "CONTINUE  >>"
+            else:
+                label = "RETURN TO TITLE" if (scene.ending and self.line_index == len(scene.lines) - 1 and not self.temp_lines) else "CONTINUE  >"
             self._button(width - 210, height - 53, 176, 35, label, "advance", 10)
             
         self.canvas.create_text(34, height - 21, anchor="w", text="Enter: continue   1–3: choose   Backspace: undo   Ctrl+C: chapters   Ctrl+B: soundboard   Ctrl+V: voice", fill="#aaa9a6", font=("Segoe UI", 8))
