@@ -66,6 +66,7 @@ Install dependencies:
 Run the game:
     python main.py
 
+<br> <br>
 Controls:
 <img width="910" height="647" alt="image" src="https://github.com/user-attachments/assets/e93b782a-4f6c-4ad2-b58f-16e66fea87ef" />
 
