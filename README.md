@@ -59,8 +59,13 @@ In your 56th life, you refuse to be a pawn. You will navigate political assassin
     git clone https://github.com/phantom-nightmare-code/fifty-six-lives-visual-novel.git
     cd fifty-six-lives-visual-novel
     
+    
 Install dependencies:
     pip install -r requirements.txt
     
 Run the game:
     python main.py
+
+Controls:
+<img width="910" height="647" alt="image" src="https://github.com/user-attachments/assets/e93b782a-4f6c-4ad2-b58f-16e66fea87ef" />
+
