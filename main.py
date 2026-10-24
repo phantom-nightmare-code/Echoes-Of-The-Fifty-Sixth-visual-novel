@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import array
+import datetime
 import json
 import math
 import os
@@ -21,8 +22,9 @@ try:
 except ImportError:
     HAS_PIL = False
 
-APP_NAME = "Fifty-Six Lives"
-SAVE_VERSION = 4
+APP_NAME = "Echoes of the Fifty Six Worlds"
+SUBTITLE = "Requiem of the Maid"
+SAVE_VERSION = 6
 FLAG_NAMES = {"bond", "peace", "resolve", "family_final", "reputation"}
 
 @dataclass(frozen=True)
@@ -983,11 +985,11 @@ CHAPTER_MUSIC = {chapter.scene_id: Path("assets") / "chapter_music" / f"chapter_
 SOUND_EFFECTS = (("summon", "Summoning Rune"), ("pages", "Forbidden Pages"), ("garden", "Garden Fountain"), ("heartbeat", "Fearful Heartbeat"), ("footsteps", "Hallway Footsteps"), ("sword", "Sword Draw"), ("wind", "Black Winter Wind"), ("hope", "Return of Hope"))
 
 
-def save_path() -> Path:
+def get_save_path(slot: int) -> Path:
     if os.name == "nt": base = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
     elif sys.platform == "darwin": base = Path.home() / "Library" / "Application Support"
     else: base = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
-    return base / "FiftySixLives" / "save.json"
+    return base / "FiftySixLives" / f"save_{slot}.json"
 
 def asset_path(*parts: str) -> Path:
     bundle_root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
@@ -1005,8 +1007,8 @@ class BackgroundMusic:
     def error(self) -> str | None: return self._error
     def play(self, track: Path | None = None) -> None:
         if not self.available: raise OSError(self._error or "MP3 unavailable.")
-        track = track or asset_path("assets", "The Maid of Light.mp3")
-        if not track.is_file(): raise FileNotFoundError(f"Not found: {track}")
+        track = track or asset_path("assets", "menu_bgm.mp3")
+        if not track.is_file(): return
         track = track.resolve()
         try:
             if not self._pygame.mixer.get_init(): self._pygame.mixer.init(frequency=44100, size=-16, channels=2)
@@ -1113,26 +1115,21 @@ class VisualNovel:
         from tkinter import messagebox
         self.tk = tk; self.messagebox = messagebox
         self.root = tk.Tk(); self.root.title(APP_NAME); self.root.geometry("1100x740"); self.root.minsize(820, 600)
-        self.canvas = tk.Canvas(self.root, bg="#101722", highlightthickness=0); self.canvas.pack(fill="both", expand=True)
+        self.canvas = tk.Canvas(self.root, bg="#06080a", highlightthickness=0); self.canvas.pack(fill="both", expand=True)
         
-        # --- WINDOW ICON ---
         if HAS_PIL:
             try:
                 base_dir = Path(__file__).resolve().parent
                 icon_path = None
                 for folder in ["assets/characters", "assets", ""]:
                     p = base_dir / folder / "Mika.png" if folder else base_dir / "Mika.png"
-                    if p.exists():
-                        icon_path = p
-                        break
-                
+                    if p.exists(): icon_path = p; break
                 if icon_path:
                     icon_img = Image.open(icon_path)
                     icon_img.thumbnail((64, 64), Image.Resampling.LANCZOS)
                     self._icon_photo = ImageTk.PhotoImage(icon_img)
                     self.root.iconphoto(True, self._icon_photo)
             except Exception: pass
-        # -------------------
 
         self.current_scene: str | None = None
         self.line_index = 0
@@ -1144,6 +1141,10 @@ class VisualNovel:
 
         self.undo_stack = []
         self.menu = True
+        self.menu_hidden = True
+        self.save_select_visible = False
+        self.save_mode = "load"
+        
         self._canvas_size = (1100, 740)
         self._animated_tags = []
         self._idle_offset = 0; self._idle_direction = -1
@@ -1177,11 +1178,10 @@ class VisualNovel:
         self.root.protocol("WM_DELETE_WINDOW", self.close)
         self.canvas.bind("<Configure>", self._on_resize)
         self.canvas.bind("<Button-1>", self._on_click)
+        self.root.bind("<Key>", self._reveal_menu)
         self.root.bind("<Return>", lambda _event: self.advance())
         self.root.bind("<space>", lambda _event: self.advance())
         self.root.bind("<BackSpace>", lambda _event: self.go_back())
-        self.root.bind("<Control-s>", lambda _event: self.save_game())
-        self.root.bind("<Control-l>", lambda _event: self.load_game())
         self.root.bind("<Escape>", lambda _event: self.show_menu())
         self.root.bind("<h>", lambda _event: self.toggle_immersive())
         for key, index in (("1", 0), ("2", 1), ("3", 2)):
@@ -1190,6 +1190,11 @@ class VisualNovel:
         self.draw()
         self.root.after(220, self._animate_idle)
 
+    def _reveal_menu(self, event=None):
+        if self.menu and self.menu_hidden and not self.chapter_select and not self.soundboard_visible and not self.soundtrack_visible and not self.credits and not self.save_select_visible:
+            self.menu_hidden = False
+            self.draw()
+
     def toggle_immersive(self):
         self.immersive_mode = not self.immersive_mode
         self.draw()
@@ -1197,10 +1202,6 @@ class VisualNovel:
     def _trigger_shake(self, duration=20, intensity=10):
         self.shake_timer = duration
         self.shake_intensity = intensity
-
-    def _trigger_flash(self):
-        self.canvas.create_rectangle(0, 0, self._canvas_size[0], self._canvas_size[1], fill="#ffffff", stipple="gray50", tags="flash")
-        self.root.after(100, lambda: self.canvas.delete("flash"))
 
     def _snapshot(self): return {"current_scene": self.current_scene, "line_index": self.line_index, "flags": self.flags.copy(), "menu": self.menu, "highest_chapter": self.highest_chapter}
     def _remember(self): self.undo_stack.append(self._snapshot())
@@ -1216,29 +1217,38 @@ class VisualNovel:
         self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         self.history.clear(); self._char_offsets.clear()
         self.immersive_mode = False
+        self.save_select_visible = False
         self._enter_scene("summoning"); self.line_index = 0; self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx("summoning"); self.draw()
 
     def show_menu(self):
-        self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self.menu = True; self._last_spoken = None
+        self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self.save_select_visible = False
+        self.menu = True; self._last_spoken = None
         self.immersive_mode = False
+        self.menu_hidden = True 
         if self.music_enabled: self._start_music()
         self.draw()
         
     def show_credits(self):
-        self.menu = True; self.credits = True; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False
+        self.menu = True; self.credits = True; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self.save_select_visible = False
         self.draw()
         
     def show_chapter_select(self):
-        self.menu = True; self.credits = False; self.chapter_select = True; self.soundboard_visible = False; self.soundtrack_visible = False
+        self.menu = True; self.credits = False; self.chapter_select = True; self.soundboard_visible = False; self.soundtrack_visible = False; self.save_select_visible = False
         self.draw()
         
     def show_soundboard(self):
-        self.menu = True; self.credits = False; self.chapter_select = False; self.soundboard_visible = True; self.soundtrack_visible = False
+        self.menu = True; self.credits = False; self.chapter_select = False; self.soundboard_visible = True; self.soundtrack_visible = False; self.save_select_visible = False
         self.draw()
 
     def show_soundtrack(self):
-        self.menu = True; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = True
+        self.menu = True; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = True; self.save_select_visible = False
+        self.draw()
+
+    def show_save_select(self, mode="load"):
+        self.menu = True; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False
+        self.save_select_visible = True
+        self.save_mode = mode
         self.draw()
 
     def show_log(self):
@@ -1279,6 +1289,7 @@ class VisualNovel:
         if not 0 <= index <= self.highest_chapter or index >= len(CHAPTERS): return
         self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
         self.history.clear(); self._char_offsets.clear()
+        self.save_select_visible = False
         self._enter_scene(CHAPTERS[index].scene_id); self.line_index = 0; self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
         self.play_scene_sfx(self.current_scene or ""); self.draw()
 
@@ -1328,7 +1339,6 @@ class VisualNovel:
         self.draw()
 
     def _start_typing(self, speaker, full_text):
-        # Parse Custom Tags
         self._is_shaking_text = "[shake]" in full_text
         full_text = full_text.replace("[shake]", "").replace("[/shake]", "")
         
@@ -1339,7 +1349,6 @@ class VisualNovel:
                 self._text_color = match.group(1)
                 full_text = re.sub(r"\[color=.*?\]|\[/color\]", "", full_text)
                 
-        # Trigger Screen FX
         if speaker == "Shadow" or "Mika" in speaker and "sacrifice" in self.current_scene:
             self._trigger_shake(15, 5)
             
@@ -1377,6 +1386,11 @@ class VisualNovel:
         if (width, height) != self._canvas_size: self._canvas_size = (width, height); self.draw()
 
     def _on_click(self, event):
+        if self.menu and self.menu_hidden and not self.save_select_visible:
+            self.menu_hidden = False
+            self.draw()
+            return
+
         item = self.canvas.find_withtag("current")
         clicked_button = False
         if item:
@@ -1398,15 +1412,23 @@ class VisualNovel:
                             except Exception: pass
                     return
                 if tag.startswith("effect_"): self.play_effect(tag.removeprefix("effect_")); return
+                if tag.startswith("slot_"):
+                    slot_num = int(tag.split("_")[1])
+                    if self.save_mode == "save":
+                        self.save_game(slot_num)
+                    else:
+                        self.load_game(slot_num)
+                    return
                 if tag.startswith("menu_"):
                     clicked_button = True
                     action = tag[5:]
                     if action == "new": self.new_game()
-                    elif action == "continue": self.load_game()
+                    elif action == "continue": self.show_save_select(mode="load")
                     elif action == "chapters": self.show_chapter_select()
-                    elif action == "soundboard": self.show_soundboard()
                     elif action == "soundtrack": self.show_soundtrack()
+                    elif action == "soundboard": self.show_soundboard()
                     elif action == "credits": self.show_credits()
+                    elif action == "settings": self.show_settings()
                     elif action == "sound": self.toggle_music()
                     elif action == "voice": self.toggle_voice()
                     elif action == "effects": self.toggle_sound_effects()
@@ -1416,7 +1438,7 @@ class VisualNovel:
                 if tag.startswith("control_"):
                     clicked_button = True
                     action = tag[8:]
-                    if action == "save": self.save_game()
+                    if action == "save": self.show_save_select(mode="save")
                     elif action == "back": self.go_back()
                     elif action == "menu": self.show_menu()
                     elif action == "music": self.toggle_music()
@@ -1443,7 +1465,6 @@ class VisualNovel:
         chapter_index = next(index for index, chapter in enumerate(CHAPTERS) if chapter.scene_id == scene_id)
         self.highest_chapter = max(self.highest_chapter, chapter_index)
         
-        # Initialize offsets for slide-in
         scene = STORY[scene_id]
         for i, name in enumerate(scene.cast):
             self._char_offsets[name] = -250 if i == 0 else 250
@@ -1512,14 +1533,12 @@ class VisualNovel:
         if self._idle_offset <= 0: self._idle_offset = 0; self._idle_direction = 1
         elif self._idle_offset >= 2: self._idle_offset = 2; self._idle_direction = -1
         
-        # Slide-in Animation
         for name in list(self._char_offsets.keys()):
             if self._char_offsets[name] < 0:
                 self._char_offsets[name] = min(0, self._char_offsets[name] + 25)
             elif self._char_offsets[name] > 0:
                 self._char_offsets[name] = max(0, self._char_offsets[name] - 25)
 
-        # Apply screen shake
         dx = dy = 0
         if self.shake_timer > 0:
             dx = random.randint(-self.shake_intensity, self.shake_intensity)
@@ -1529,7 +1548,6 @@ class VisualNovel:
         for tag in self._animated_tags:
             self.canvas.move(tag, dx, dy - (previous_offset - self._idle_offset))
 
-        # Shake Text effect
         if self.text_id and self._is_shaking_text:
             tx = random.randint(-3, 3)
             ty = random.randint(-3, 3)
@@ -1537,33 +1555,56 @@ class VisualNovel:
 
         self.root.after(220, self._animate_idle)
 
-    def save_game(self):
+    def save_game(self, slot: int):
         if self.current_scene is None or self.menu or self.temp_lines: return
-        path = save_path(); data = {"version": SAVE_VERSION, "current_scene": self.current_scene, "line_index": self.line_index, "flags": self.flags, "highest_chapter": self.highest_chapter}
-        try: path.parent.mkdir(parents=True, exist_ok=True); path.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        except OSError: return
+        path = get_save_path(slot)
+        
+        chapter = CHAPTER_BY_SCENE.get(self.current_scene)
+        title = f"Chapter {chapter.key} - {chapter.title}" if chapter else self.current_scene
+        
+        data = {
+            "version": SAVE_VERSION, 
+            "current_scene": self.current_scene, 
+            "line_index": self.line_index, 
+            "flags": self.flags, 
+            "highest_chapter": self.highest_chapter,
+            "preview_title": title,
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        }
+        try: 
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            self.save_select_visible = False
+            self.draw()
+        except OSError as e: 
+            self.messagebox.showerror(APP_NAME, f"Failed to save:\n{e}")
 
-    def load_game(self):
-        path = save_path()
+    def load_game(self, slot: int):
+        path = get_save_path(slot)
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
             scene_id = data["current_scene"]; line_index = data["line_index"]; flags = data["flags"]
             if not 0 <= line_index < len(STORY[scene_id].lines): raise ValueError()
             highest_chapter = data.get("highest_chapter", 0)
-        except Exception: return
+        except FileNotFoundError:
+            self.messagebox.showinfo(APP_NAME, "This slot is empty.")
+            return
+        except Exception: 
+            self.messagebox.showerror(APP_NAME, "Save file is corrupted.")
+            return
         
         self.undo_stack.clear(); self._enter_scene(scene_id); self.line_index = line_index; self.flags = flags; self.highest_chapter = max(highest_chapter, self.highest_chapter)
         self.temp_lines = None; self.temp_index = 0; self.pending_next_scene = None
-        self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self._last_spoken = None
+        self.menu = False; self.credits = False; self.chapter_select = False; self.soundboard_visible = False; self.soundtrack_visible = False; self.save_select_visible = False; self._last_spoken = None
         self.history.clear()
         self.play_scene_sfx(scene_id); self.draw()
 
     def _button(self, x, y, width, height, label, tag, font_size=15):
-        self.canvas.create_rectangle(x, y, x + width, y + height, fill="#1a2938", outline="#a78b58", width=1, tags=(tag,))
-        self.canvas.create_text(x + width / 2, y + height / 2, text=label, fill="#f4ead6", font=("Segoe UI", font_size, "bold"), tags=(tag,), width=width - 8)
+        self.canvas.create_rectangle(x, y, x + width, y + height, fill="#101722", outline="#c4a879", width=1, tags=(tag,))
+        self.canvas.create_text(x + width / 2, y + height / 2, text=label, fill="#e0d5c1", font=("Georgia", font_size), tags=(tag,), width=width - 8)
 
     def _draw_background(self, backdrop: str, width: int, height: int):
-        self.canvas.create_rectangle(0, 0, width, height, fill="#101722", outline="")
+        self.canvas.create_rectangle(0, 0, width, height, fill="#06080a", outline="")
         if not HAS_PIL: return
         filename = f"{backdrop}.png"; image_path = None; base_dir = Path(__file__).resolve().parent
         
@@ -1585,7 +1626,7 @@ class VisualNovel:
             except Exception: return
         
         self.canvas.create_image(0, 0, image=self._bg_cache[cache_key], anchor="nw")
-        overlay = Image.new("RGBA", (width, height), (16, 23, 34, 120))
+        overlay = Image.new("RGBA", (width, height), (6, 8, 10, 160))
         self._bg_cache[("overlay", width, height)] = ImageTk.PhotoImage(overlay)
         self.canvas.create_image(0, 0, image=self._bg_cache[("overlay", width, height)], anchor="nw")
 
@@ -1593,7 +1634,6 @@ class VisualNovel:
         sprite_tag = f"sprite_{index}"
         self._animated_tags.append(sprite_tag)
         
-        # Add slide-in offset
         x += self._char_offsets.get(name, 0)
         
         filename_map = {"Mika": "Mika", "Mallory": "Mallory", "King Galvath": "Galvath", "Lira": "Lira", "Gorthak": "Gorthak", "Shadow": "shadow"}
@@ -1613,10 +1653,10 @@ class VisualNovel:
         img_path = find_file(f"{base_name}{expression}.png") or find_file(f"{base_name}.png")
         
         if not img_path:
-            self.canvas.create_rectangle(x-100, ground-250, x+100, ground, fill="#1a2938", outline="#a78b58", width=2, tags=(sprite_tag,))
-            self.canvas.create_text(x, ground-125, text=name, fill="#edcf88", font=("Georgia", 20, "bold"), tags=(sprite_tag,))
-            self.canvas.create_text(x, ground-100, text="[Portrait Missing]", fill="#c5c0bd", font=("Segoe UI", 10), tags=(sprite_tag,))
-            self.canvas.create_text(x, ground + 15, text=name, fill="#eee5d4", font=("Segoe UI", 11, "bold"), tags=(sprite_tag,))
+            self.canvas.create_rectangle(x-100, ground-250, x+100, ground, fill="#1a2938", outline="#c4a879", width=2, tags=(sprite_tag,))
+            self.canvas.create_text(x, ground-125, text=name, fill="#e0d5c1", font=("Georgia", 20, "bold"), tags=(sprite_tag,))
+            self.canvas.create_text(x, ground-100, text="[Portrait Missing]", fill="#8c8478", font=("Segoe UI", 10), tags=(sprite_tag,))
+            self.canvas.create_text(x, ground + 15, text=name, fill="#e0d5c1", font=("Segoe UI", 11, "bold"), tags=(sprite_tag,))
             return
 
         if not HAS_PIL: return
@@ -1661,29 +1701,60 @@ class VisualNovel:
         tk_image = self._image_cache[cache_key]
         ground -= self._idle_offset
         self.canvas.create_image(x, ground, image=tk_image, anchor="s", tags=(sprite_tag,))
-        self.canvas.create_text(x, ground + 15, text=name, fill="#eee5d4", font=("Segoe UI", 11, "bold"), tags=(sprite_tag,))
+        self.canvas.create_text(x, ground + 15, text=name, fill="#e0d5c1", font=("Segoe UI", 11, "bold"), tags=(sprite_tag,))
 
     def _draw_menu(self, width: int, height: int):
         backdrop = "archive" if self.chapter_select or self.soundtrack_visible else "winter" if self.soundboard_visible else "garden"
         self._draw_background(backdrop, width, height)
+        
+        if self.save_select_visible:
+            self.canvas.create_rectangle(0, 0, width, height, fill="#06080a", stipple="gray50", outline="")
+            self.canvas.create_text(width/2, height*0.15, text="SAVE GAME" if self.save_mode == "save" else "LOAD GAME", fill="#edcf88", font=("Georgia", 24, "bold"))
+            
+            for i in range(1, 4):
+                slot_path = get_save_path(i)
+                slot_data = None
+                if slot_path.exists():
+                    try: slot_data = json.loads(slot_path.read_text(encoding="utf-8"))
+                    except Exception: pass
+                
+                title = slot_data.get("preview_title", "Unknown Chapter") if slot_data else "Empty Slot"
+                date = slot_data.get("timestamp", "") if slot_data else ""
+                
+                y = height * 0.25 + (i-1) * 100
+                btn_w, btn_h = min(600, width * 0.6), 80
+                x = (width - btn_w) / 2
+                
+                self.canvas.create_rectangle(x, y, x + btn_w, y + btn_h, fill="#101722", outline="#c4a879", width=1, tags=(f"slot_{i}",))
+                self.canvas.create_text(x + 20, y + 25, anchor="w", text=f"Slot {i}", fill="#e0d5c1", font=("Georgia", 16, "bold"), tags=(f"slot_{i}",))
+                
+                text_color = "#f5e9d2" if slot_data else "#4a505c"
+                self.canvas.create_text(x + 20, y + 55, anchor="w", text=title, fill=text_color, font=("Segoe UI", 12), tags=(f"slot_{i}",))
+                
+                if slot_data:
+                    self.canvas.create_text(x + btn_w - 20, y + 55, anchor="e", text=date, fill="#8c8478", font=("Segoe UI", 10), tags=(f"slot_{i}",))
+                    
+            self._button(width / 2 - 100, height - 80, 200, 40, "CANCEL", "menu_back", 12)
+            return
+
         if not self.chapter_select and not self.soundboard_visible and not self.soundtrack_visible and not self.credits: 
             self._draw_coverpage(width, height); return
             
-        self.canvas.create_rectangle(0, 0, width, 62, fill="#101722", outline="#c4a879", width=2)
-        self.canvas.create_text(width / 2, 26, text="FIFTY-SIX LIVES", fill="#f5e9d2", font=("Georgia", max(26, width // 32), "bold"))
+        self.canvas.create_rectangle(0, 0, width, 62, fill="#06080a", outline="#c4a879", width=2)
+        self.canvas.create_text(width / 2, 26, text=APP_NAME.upper(), fill="#f5e9d2", font=("Georgia", max(26, width // 32), "bold"))
 
         if self.credits:
-            self.canvas.create_rectangle(0, height * 0.59, width, height, fill="#101722", outline="#c4a879", width=2)
+            self.canvas.create_rectangle(0, height * 0.59, width, height, fill="#06080a", outline="#c4a879", width=2)
             self.canvas.create_text(width / 2, height * 0.65, text="CREDITS", fill="#edcf88", font=("Georgia", 21, "bold"))
             self.canvas.create_text(width / 2, height * 0.72, text="Story & Visual Novel Creator", fill="#d8c8aa", font=("Segoe UI", 11))
-            self.canvas.create_text(width / 2, height * 0.77, text="James Adrian B. Castro", fill="#fff4de", font=("Georgia", 17, "bold"))
+            self.canvas.create_text(width / 2, height * 0.77, text="Phantom Nightmare Developer", fill="#fff4de", font=("Georgia", 17, "bold"))
             self.canvas.create_text(width / 2, height * 0.83, text="Original soundtrack and lyrics by:", fill="#d8c8aa", font=("Segoe UI", 11))
-            self.canvas.create_text(width / 2, height * 0.88, text="James Adrian B. Castro - The Maid of Light", fill="#e6d6b8", font=("Segoe UI", 13, "bold"))
+            self.canvas.create_text(width / 2, height * 0.88, text="Phantom Nightmare Developer", fill="#e6d6b8", font=("Segoe UI", 13, "bold"))
             self._button(width / 2 - 110, height * 0.51, 220, 34, "BACK TO TITLE", "menu_back", 10)
             return
 
         if self.chapter_select:
-            self.canvas.create_rectangle(0, 62, width, height - 36, fill="#101722", outline="#c4a879", width=1)
+            self.canvas.create_rectangle(0, 62, width, height - 36, fill="#06080a", outline="#c4a879", width=1)
             self.canvas.create_text(width / 2, 82, text="CHAPTER SELECT", fill="#edcf88", font=("Georgia", 19, "bold"))
             
             column_gap = 20
@@ -1705,7 +1776,7 @@ class VisualNovel:
             return
 
         if self.soundboard_visible:
-            self.canvas.create_rectangle(0, 62, width, height - 38, fill="#101722", outline="#c4a879", width=1)
+            self.canvas.create_rectangle(0, 62, width, height - 38, fill="#06080a", outline="#c4a879", width=1)
             self.canvas.create_text(width / 2, 91, text="VALLHELM SOUND LIBRARY", fill="#edcf88", font=("Georgia", 19, "bold"))
             columns = 2; button_width = min(410, (width - 110) / columns)
             for index, (key, label) in enumerate(SOUND_EFFECTS):
@@ -1716,7 +1787,7 @@ class VisualNovel:
             return
 
         if self.soundtrack_visible:
-            self.canvas.create_rectangle(0, 62, width, height - 38, fill="#101722", outline="#c4a879", width=1)
+            self.canvas.create_rectangle(0, 62, width, height - 38, fill="#06080a", outline="#c4a879", width=1)
             self.canvas.create_text(width / 2, 85, text="SOUNDTRACK LIST", fill="#edcf88", font=("Georgia", 19, "bold"))
             columns = 3; button_width = (width - 80) / columns; button_height = 30
             for index, chapter in enumerate(CHAPTERS):
@@ -1726,33 +1797,66 @@ class VisualNovel:
             self._button(width / 2 - 105, height - 43, 210, 30, "BACK TO TITLE", "menu_back", 9)
             return
 
-        self.canvas.create_rectangle(0, height * 0.55, width, height, fill="#101722", outline="#c4a879", width=2)
+        self.canvas.create_rectangle(0, height * 0.55, width, height, fill="#06080a", outline="#c4a879", width=2)
         button_w, button_h = min(320, width * 0.46), 34; start_x = (width - button_w) / 2
-        actions = (("NEW STORY", "new"), ("CONTINUE", "continue"), ("CHAPTER SELECT", "chapters"), ("SOUNDTRACK", "soundtrack"), ("SOUNDBOARD", "soundboard"), ("CREDITS", "credits"), ("QUIT", "quit"))
+        actions = (("NEW STORY", "new"), ("CONTINUE", "continue"), ("CHAPTER SELECT", "chapters"), ("SOUNDTRACK", "soundtrack"), ("SETTINGS", "settings"), ("CREDITS", "credits"), ("QUIT", "quit"))
         for index, (label, action) in enumerate(actions):
             self._button(start_x, height * 0.60 + index * 35, button_w, button_h, label, f"menu_{action}", 10)
 
     def _draw_coverpage(self, width: int, height: int):
-        mika_x = width * 0.35
-        self.canvas.create_oval(mika_x - width * 0.19, height * 0.12, mika_x + width * 0.19, height * 0.99, outline="#d5bd82", width=2)
-        self._draw_character("Mika", mika_x, height * 0.99, width, 0)
-        self.canvas.create_text(width * 0.32, height * 0.075, text="FIFTY-SIX LIVES", fill="#fff3df", font=("Georgia", max(27, width // 29), "bold"))
-        self.canvas.create_text(width * 0.32, height * 0.145, text="THE TALE OF MIKA AMANOGAWA", fill="#f0d18a", font=("Segoe UI", max(10, width // 90), "bold"))
-        self.canvas.create_text(width * 0.32, height * 0.205, text="One quiet maid. Fifty-five forgotten lives.\nOne chance to call a place home.", fill="#f7f1e6", font=("Segoe UI", max(10, width // 100)))
+        self.canvas.create_rectangle(0, 0, width, height, fill="#030406", outline="")
         
-        panel_left = width * 0.62; panel_top = height * 0.11; panel_right = width * 0.98; panel_bottom = height * 0.97
-        self.canvas.create_rectangle(panel_left, panel_top, panel_right, panel_bottom, fill="#101722", outline="#c4a879", width=2)
-        self.canvas.create_text((panel_left + panel_right) / 2, panel_top + 30, text="CHOOSE YOUR PATH", fill="#edcf88", font=("Georgia", max(13, width // 65), "bold"))
+        cx, cy = width / 2, height * 0.35
         
-        button_width = panel_right - panel_left - 28
-        button_height = min(38, max(30, height * 0.055)) 
-        button_gap = min(8, max(5, height * 0.012))
-        button_x = panel_left + 14
-        button_y = panel_top + height * 0.14
+        self.canvas.create_oval(cx - 200, cy - 200, cx + 200, cy + 200, outline="#1a2233", width=1)
+        self.canvas.create_oval(cx - 170, cy - 170, cx + 170, cy + 170, outline="#a78b58", width=1, dash=(4, 8))
+        self.canvas.create_oval(cx - 140, cy - 140, cx + 140, cy + 140, outline="#1a2233", width=1)
         
-        actions = (("NEW STORY", "new"), ("CONTINUE", "continue"), ("CHAPTER SELECT", "chapters"), ("SOUNDTRACK", "soundtrack"), ("SOUNDBOARD", "soundboard"), ("CREDITS", "credits"), ("QUIT", "quit"))
+        self.canvas.create_line(cx - 220, cy, cx + 220, cy, fill="#1a2233", width=1)
+        self.canvas.create_line(cx, cy - 220, cx, cy + 220, fill="#1a2233", width=1)
+        
+        self.canvas.create_polygon(cx, cy - 190, cx + 10, cy - 180, cx, cy - 170, cx - 10, cy - 180, fill="#a78b58", outline="")
+        self.canvas.create_polygon(cx, cy + 190, cx + 10, cy + 180, cx, cy + 170, cx - 10, cy + 180, fill="#a78b58", outline="")
+        
+        self.canvas.create_text(cx, cy - 40, text="E C H O E S   O F   T H E", fill="#8c8478", font=("Georgia", 14))
+        self.canvas.create_text(cx, cy + 20, text="FIFTY SIX WORLDS", fill="#f5e9d2", font=("Georgia", 45, "bold"))
+        self.canvas.create_text(cx, cy + 75, text="R E Q U I E M   O F   T H E   M A I D", fill="#a78b58", font=("Georgia", 11, "bold"))
+        
+        self.canvas.create_line(cx - 260, cy + 60, cx - 110, cy + 60, fill="#a78b58", width=1)
+        self.canvas.create_line(cx + 110, cy + 60, cx + 260, cy + 60, fill="#a78b58", width=1)
+        
+        rng = random.Random(42)
+        for _ in range(40):
+            px, py = rng.randrange(width), rng.randrange(height)
+            radius = rng.choice((1, 1, 2))
+            self.canvas.create_oval(px, py, px + radius, py + radius, fill="#3a4559", outline="")
+        
+        if self.menu_hidden:
+            self.canvas.create_text(
+                width / 2, height * 0.85, text="Click or press any key", 
+                fill="#4a505c", font=("Segoe UI", 10), justify="center"
+            )
+            return
+            
+        button_width = min(300, width * 0.3)
+        button_height = 35
+        button_gap = 10
+        start_y = height * 0.53
+        
+        actions = (
+            ("START GAME", "new"), 
+            ("CONTINUE", "continue"), 
+            ("CHAPTER SELECT", "chapters"), 
+            ("SOUNDTRACK", "soundtrack"), 
+            ("SETTINGS", "settings"), 
+            ("CREDITS", "credits"), 
+            ("QUIT", "quit")
+        )
+        
         for index, (label, action) in enumerate(actions):
-            self._button(button_x, button_y + index * (button_height + button_gap), button_width, button_height, label, f"menu_{action}", max(9, width // 105))
+            x = (width - button_width) / 2
+            y = start_y + index * (button_height + button_gap)
+            self._button(x, y, button_width, button_height, label, f"menu_{action}", 12)
 
     def draw(self):
         width, height = self._canvas_size
@@ -1764,9 +1868,8 @@ class VisualNovel:
         self._draw_background(scene.backdrop, width, height)
         chapter = CHAPTER_BY_SCENE[self.current_scene]
         
-        # Top Bar (Hide in immersive mode)
         if not self.immersive_mode:
-            self.canvas.create_rectangle(0, 0, width, 70, fill="#101722", outline="#c4a879", width=1)
+            self.canvas.create_rectangle(0, 0, width, 70, fill="#06080a", outline="#c4a879", width=1)
             self.canvas.create_text(24, 13, anchor="nw", text=f"ARC  {chapter.arc}", fill="#e8c779", font=("Segoe UI", 9, "bold"))
             self.canvas.create_text(24, 38, anchor="nw", text=f"CHAPTER {chapter.key}  ·  {chapter.title.upper()}", fill="#f1e5ce", font=("Segoe UI", 11, "bold"))
             
@@ -1792,8 +1895,8 @@ class VisualNovel:
             total = sum(button_width for _label, _tag, button_width in controls) + 6 * (len(controls) - 1)
             x = width - total - 14
             for label, tag, button_width in controls:
-                self.canvas.create_rectangle(x, 18, x + button_width, 34 + 18, fill="#1a2938", outline="#a78b58", width=1, tags=(tag,))
-                self.canvas.create_text(x + button_width / 2, 18 + 34 / 2, text=label, fill="#4ade80" if self.auto_play and label == "AUTO" else "#f4ead6", font=("Segoe UI", 8, "bold"), tags=(tag,), width=button_width - 8)
+                self.canvas.create_rectangle(x, 18, x + button_width, 34 + 18, fill="#101722", outline="#c4a879", width=1, tags=(tag,))
+                self.canvas.create_text(x + button_width / 2, 18 + 34 / 2, text=label, fill="#4ade80" if self.auto_play and label == "AUTO" else "#e0d5c1", font=("Segoe UI", 8, "bold"), tags=(tag,), width=button_width - 8)
                 x += button_width + 6
 
         stage_ground = height * 0.72
@@ -1805,7 +1908,12 @@ class VisualNovel:
             for index, name in enumerate(cast):
                 self._draw_character(name, start_x + index * spacing, stage_ground, width, index)
 
-        panel_top = height * 0.72
+        panel_top = height * 0.72 
+        
+        if not self.immersive_mode:
+            self.canvas.create_rectangle(0, panel_top, width, height, fill="#06080a", outline="#c4a879", width=2)
+        else:
+            self.canvas.create_rectangle(0, panel_top, width, height, fill="#06080a", stipple="gray50", outline="")
         
         if self.temp_lines:
             active_lines = self.temp_lines
@@ -1818,42 +1926,26 @@ class VisualNovel:
             
         final_text = resolve_text(line.text, self.flags)
         
-        ready_for_choice = bool(scene.choices) and not self.temp_lines and self.line_index == len(scene.lines) - 1
-        font_size = max(12, round(width / 73))
-        choice_gap = 6
-        choice_button_h = 0
-        choice_y = 0
-        if ready_for_choice:
-            choice_button_h = min(34, max(18, (height - panel_top - 120 - choice_gap * (len(scene.choices) - 1)) / len(scene.choices)))
-            choice_y = height - 38 - len(scene.choices) * choice_button_h - (len(scene.choices) - 1) * choice_gap
-            self.is_typing = False
-            self.display_text = re.sub(r"\[.*?\]", "", final_text)
-            while True:
-                measure_id = self.canvas.create_text(34, 0, anchor="nw", text=self.display_text, font=("Segoe UI", font_size), width=width - 68)
-                text_bbox = self.canvas.bbox(measure_id)
-                self.canvas.delete(measure_id)
-                text_height = text_bbox[3] - text_bbox[1] if text_bbox else 0
-                available_height = choice_y - 10 - (panel_top + 43)
-                if text_height <= available_height or font_size <= 12:
-                    break
-                font_size -= 1
-            if text_height > available_height:
-                panel_top = max(0, min(panel_top, choice_y - 10 - 43 - text_height))
-        else:
-            self.display_text = ""
-
-        if not self.immersive_mode:
-            self.canvas.create_rectangle(0, panel_top, width, height, fill="#101722", outline="#c4a879", width=2)
-        else:
-            self.canvas.create_rectangle(0, panel_top, width, height, fill="#101722", stipple="gray50", outline="")
-
         self.canvas.create_text(34, panel_top + 17, anchor="nw", text=line.speaker.upper(), fill="#d9bd82", font=("Segoe UI", 11, "bold"))
-        self.text_id = self.canvas.create_text(34, panel_top + 43, anchor="nw", text="", fill=self._text_color, font=("Segoe UI", font_size), width=width - 68)
-
+        self.text_id = self.canvas.create_text(34, panel_top + 43, anchor="nw", text="", fill=self._text_color, font=("Segoe UI", max(12, round(width / 73))), width=width - 68)
+        
+        ready_for_choice = bool(scene.choices) and not self.temp_lines and self.line_index == len(scene.lines) - 1
+        
         if ready_for_choice:
+            self.is_typing = False 
+            self.display_text = re.sub(r"\[.*?\]", "", final_text)
             self.canvas.itemconfigure(self.text_id, text=self.display_text)
+            
+            bbox = self.canvas.bbox(self.text_id)
+            text_bottom = bbox[3] if bbox else panel_top + 80
+            choice_start_y = max(panel_top + 105, text_bottom + 15)
+            
+            available_height = height - choice_start_y - 20
+            button_h = min(38, max(25, available_height / len(scene.choices) - 7))
+            
+            y = choice_start_y
             for index, choice in enumerate(scene.choices):
-                self._button(34, choice_y + index * (choice_button_h + choice_gap), width - 68, choice_button_h, f"{index + 1}. {choice.text}", f"choice_{index}", 12)
+                self._button(34, y + index * (button_h + 7), width - 68, button_h, f"{index + 1}. {choice.text}", f"choice_{index}", 12)
         else:
             if self.temp_lines and self.temp_index == len(self.temp_lines) - 1:
                 label = "CONTINUE  >>"
@@ -1873,7 +1965,7 @@ class VisualNovel:
                 self.canvas.itemconfigure(self.text_id, text=self.display_text)
 
         if not self.immersive_mode:
-            self.canvas.create_text(34, height - 21, anchor="w", text="Click anywhere to advance   •   Press H for Immersive Mode   •   Space: continue   •   Backspace: undo", fill="#aaa9a6", font=("Segoe UI", 8))
+            self.canvas.create_text(34, height - 21, anchor="w", text="Click anywhere to advance   •   Press H for Immersive Mode   •   Space: continue   •   Backspace: undo", fill="#8c8478", font=("Segoe UI", 8))
 
 def run():
     game = VisualNovel(); game.root.mainloop()
