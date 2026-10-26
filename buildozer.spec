@@ -3,7 +3,7 @@ title = Echoes Of The Fifty-Sixth
 package.name = echoes56
 package.domain = org.phantomnightmare
 source.dir = .
-source.entrypoint = mobile_app.py
+source.entrypoint = mobile_app.py # Change to main.py if that is your entry file
 source.include_exts = py,png,jpg,kv,atlas,json,ogg,mp3,wav,ttf
 source.exclude_patterns = __pycache__, *.pyc, *.spec, *.md, .git*, .github*, venv*, build*, dist*
 version = 1.0.0
@@ -14,11 +14,7 @@ fullscreen = 1
 android.permissions = INTERNET
 android.api = 33
 android.minapi = 21
-
-# Fix for setgrent / getgrent implicit declaration error
-android.extra_cflags = -D_GNU_SOURCE
-
-android.ndk = 23b
+android.ndk = 25b
 android.ndk_api = 21
 android.accept_sdk_license = True
 android.enable_androidx = True
