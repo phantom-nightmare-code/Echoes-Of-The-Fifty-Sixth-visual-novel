@@ -14,14 +14,32 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # This step runs Buildozer inside the official kivy/buildozer Docker image.
-    # This bypasses the broken 'Docker build' step from the previous action.
-    - name: Build with Buildozer (via Official Docker Image)
+    # 1. Cache the Android SDK and NDK to make future builds much faster
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      with:
+        path: ~/.buildozer
+        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          buildozer-global-
+
+    # 2. Cache Gradle dependencies
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle/caches
+        key: gradle-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          gradle-
+
+    # 3. Run Buildozer correctly inside the official Docker image
+    - name: Build with Buildozer (Official Docker Image)
       run: |
         docker run --rm \
           -v "${{ github.workspace }}":/home/user/hostcwd \
+          -v "$HOME/.buildozer":/home/user/.buildozer \
           kivy/buildozer:latest \
-          buildozer android debug
+          android debug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
