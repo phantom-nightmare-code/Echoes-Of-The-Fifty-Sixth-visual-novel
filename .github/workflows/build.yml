@@ -3,21 +3,41 @@ name: Build Android APK
 on:
   push:
     branches: [ "main", "master" ]
+  pull_request:
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 120 # <--- CRITICAL: Gives the runner enough time for the first slow build
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    # CRITICAL: Cache Buildozer and Gradle dependencies so the runner doesn't waste time rebuilding SDKs
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
+      with:
+        path: ~/.buildozer
+        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          buildozer-global-
+
+    - name: Cache Gradle dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.gradle/caches
+        key: gradle-${{ hashFiles('buildozer.spec') }}
+        restore-keys: |
+          gradle-
 
     - name: Build with Buildozer
       uses: ArtemSBulgakov/buildozer-action@v1
       id: buildozer
       with:
         command: buildozer -v android debug
-        buildozer_version: 1.5.0
+        buildozer_version: stable # <--- CRITICAL: 'stable' is more reliable than hardcoding an outdated 1.5.0
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
