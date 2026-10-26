@@ -38,11 +38,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install buildozer cython==0.29.36
 
+      - name: Clear Build Cache
+        run: |
+          buildozer android clean || true
+          rm -rf .buildozer
+
       - name: Build with Buildozer
         run: |
           ulimit -c unlimited
           ulimit -s unlimited
-          # Removed "yes |" to fix the Broken pipe error
           buildozer android debug
 
       - name: Upload APK Artifact
