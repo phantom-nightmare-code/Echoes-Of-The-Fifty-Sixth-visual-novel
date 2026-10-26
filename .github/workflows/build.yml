@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    # Pinned to Ubuntu 22.04 because it still has the libtinfo5 package required by Buildozer
+    # Pinned to Ubuntu 22.04 to ensure libtinfo5 is available
     runs-on: ubuntu-22.04
     timeout-minutes: 120
 
@@ -27,7 +27,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # CACHE: Saves the massive Android SDK/NDK download for future builds
+    # Cache Buildozer global directory to save Android SDK/NDK downloads
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
@@ -36,7 +36,7 @@ jobs:
         restore-keys: |
           buildozer-global-
 
-    # CACHE: Saves Gradle dependencies
+    # Cache Gradle dependencies
     - name: Cache Gradle dependencies
       uses: actions/cache@v4
       with:
@@ -53,7 +53,7 @@ jobs:
 
     - name: Build with Buildozer
       run: |
-        # The 'yes |' part automatically accepts the Android SDK licenses
+        # Piping 'yes' automatically accepts any license prompts
         yes | buildozer -v android debug
 
     - name: Upload APK
