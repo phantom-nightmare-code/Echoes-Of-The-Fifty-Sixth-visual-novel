@@ -1,8 +1,8 @@
-name: Build Android APK
+name: Build Android APK (Docker)
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
   workflow_dispatch:
 
 jobs:
@@ -11,44 +11,47 @@ jobs:
     timeout-minutes: 120
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # 1. Clear the broken cache that contains Python 3.14 files
-    - name: Clear Broken Buildozer Cache
-      run: |
-        rm -rf ~/.buildozer
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    # 2. Cache the Android SDK and NDK for future fast builds
-    - name: Cache Buildozer global directory
-      uses: actions/cache@v4
-      with:
-        path: ~/.buildozer
-        key: buildozer-global-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          buildozer-global-
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential git zip unzip \
+            autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev \
+            libtinfo6 cmake libffi-dev libssl-dev
 
-    # 3. Cache Gradle dependencies
-    - name: Cache Gradle dependencies
-      uses: actions/cache@v4
-      with:
-        path: ~/.gradle/caches
-        key: gradle-${{ hashFiles('buildozer.spec') }}
-        restore-keys: |
-          gradle-
+      - name: Install Buildozer
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install buildozer cython==0.29.36
 
-    # 4. Build using the official Docker image (changed from 1.5.0 to latest)
-    - name: Build with Buildozer (Official Docker Image)
-      run: |
-        docker run --rm \
-          -v "${{ github.workspace }}":/home/user/hostcwd \
-          -v "$HOME/.buildozer":/home/user/.buildozer \
-          kivy/buildozer:latest \
-          android debug
+      - name: Cache Buildozer global directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.buildozer
+          key: buildozer-global-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-global-
 
-    # 5. Upload the finished APK
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: app-debug-apk
-        path: bin/*.apk
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            gradle-
+
+      - name: Build debug APK
+        run: buildozer android debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: bin/*.apk
