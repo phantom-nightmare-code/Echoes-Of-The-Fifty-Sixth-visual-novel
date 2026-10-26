@@ -38,7 +38,7 @@ jobs:
       - name: Install Android build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential git zip unzip openjdk-17-jdk \
+          sudo apt-get install -y build-essential git zip unzip \
             autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev \
             libtinfo6 cmake libffi-dev libssl-dev
           python -m pip install --upgrade pip
