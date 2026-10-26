@@ -14,6 +14,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
+    # 1. Clear the Buildozer cache to remove corrupted downloads
+    - name: Clear Buildozer Cache
+      run: |
+        rm -rf ~/.buildozer
+
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
