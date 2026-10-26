@@ -24,7 +24,7 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    # CACHE STEP 1: Cache Buildozer global directory
+    # CACHE STEP 1: Cache Buildozer global directory (Speeds up future builds massively)
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
