@@ -3,47 +3,24 @@ name: Build Android APK
 on:
   push:
     branches: [main]
-    paths:
-      - "main.py"
-      - "game_session.py"
-      - "mobile_app.py"
-      - "buildozer.spec"
-      - "icon.png"
-      - "assets/backgrounds/**"
-      - "assets/characters/**"
-      - ".github/workflows/android.yml"
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        # Removed sparse-checkout so that icon.png is available.
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
         with:
-          python-version: "3.11"
+          command: buildozer android debug
+          buildozer_version: stable
 
-      - uses: actions/setup-java@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Install Android build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential git zip unzip \
-            autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev \
-            libtinfo6 cmake libffi-dev libssl-dev
-          python -m pip install --upgrade pip
-          python -m pip install buildozer cython==0.29.36
-
-      - name: Build debug APK
-        run: buildozer android debug
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: echoes-of-the-fifty-six-worlds-android
-          path: bin/*.apk
+          name: echoes-of-the-fifty-sixth-apk
+          path: ${{ steps.buildozer.outputs.filename }}
