@@ -40,6 +40,8 @@ python -m pip install buildozer cython==0.29.36
 buildozer android debug
 ```
 
+The Buildozer configuration pins python-for-android to the upstream change that supports Android-tagged Python wheels such as `charset-normalizer`.
+
 Alternatively, after pushing the project to GitHub, run **Build Android APK** from the repository's Actions tab and download the generated APK artifact. A release APK intended for public distribution should be signed with your Android signing key.
 
 ## Run from source
