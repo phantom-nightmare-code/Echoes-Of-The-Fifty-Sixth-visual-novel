@@ -8,6 +8,7 @@ on:
       - "game_session.py"
       - "mobile_app.py"
       - "buildozer.spec"
+      - "icon.png"
       - "assets/backgrounds/**"
       - "assets/characters/**"
       - ".github/workflows/android.yml"
@@ -16,25 +17,20 @@ on:
 jobs:
   build:
     runs-on: ubuntu-22.04
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          filter: blob:none
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /main.py
-            /game_session.py
-            /mobile_app.py
-            /buildozer.spec
-            /assets/backgrounds/
-            /assets/characters/
+        # Removed sparse-checkout so that icon.png is available.
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: "17"
+
       - name: Install Android build tools
         run: |
           sudo apt-get update
@@ -43,8 +39,10 @@ jobs:
             libtinfo6 cmake libffi-dev libssl-dev
           python -m pip install --upgrade pip
           python -m pip install buildozer cython==0.29.36
+
       - name: Build debug APK
         run: buildozer android debug
+
       - uses: actions/upload-artifact@v4
         with:
           name: echoes-of-the-fifty-six-worlds-android
