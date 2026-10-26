@@ -12,34 +12,31 @@ package.domain = org.phantomnightmare
 # (str) Source code where the main.py live
 source.dir = .
 
-# (list) Source files to include (let empty to include all the files)
+# (list) Source files to include (CRITICAL: Includes audio and fonts)
 source.include_exts = py,png,jpg,kv,atlas,json,ogg,mp3,wav,ttf
 
-# (list) Source files to exclude (let empty to not exclude anything)
+# (list) Source files to exclude
 source.exclude_exts = spec
 
-# (list) List of directory to exclude (let empty to not exclude anything)
+# (list) List of directory to exclude (CRITICAL: Removed assets/chapter_music from this list)
 source.exclude_dirs = .git,.venv,venv,build,dist,__pycache__
 
 # (str) Application versioning (method 1)
 version = 1.0
 
-# (str) The main entry point of your application (CRITICAL FIX)
+# (str) The main entry point of your application (CRITICAL: Uses the Kivy file, not Tkinter)
 source.entrypoint = mobile_app.py
 
-# (list) Application requirements (Kivy for mobile)
+# (list) Application requirements
 requirements = python3,kivy,pillow
 
-# (str) Presplash of the application
-# presplash.filename = %(source.dir)s/data/presplash.png
-
-# (str) Icon of the application (CRITICAL FIX FOR YOUR LOGO)
+# (str) Icon of the application (CRITICAL: Points to your logo)
 icon.filename = %(source.dir)s/icon.png
 
-# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
+# (str) Supported orientation
 orientation = portrait
 
-# (bool) Indicate if the application should be fullscreen or not
+# (bool) Indicate if the application should be fullscreen
 fullscreen = 1
 
 # (list) Permissions
@@ -62,15 +59,3 @@ android.private_storage = True
 
 # (str) Android entry point
 android.entrypoint = org.kivy.android.PythonActivity
-
-# (list) Android application meta-data to set (key=value format)
-# android.meta_data =
-
-# (list) List of Java .jar files to add to the libs
-# android.add_jars = foo.jar,bar.jar
-
-# (list) List of Java files to add to the android project
-# android.add_src = path/to/your/src
-
-# (str) python-for-android branch to use
-p4a.branch = master
