@@ -15,7 +15,7 @@ android.permissions = INTERNET
 android.api = 33
 android.minapi = 21
 
-# Fix for setgrent / getgrent implicit declaration error in NDK
+# Fix for setgrent / getgrent implicit declaration error
 android.extra_cflags = -D_GNU_SOURCE
 
 android.ndk = 23b
