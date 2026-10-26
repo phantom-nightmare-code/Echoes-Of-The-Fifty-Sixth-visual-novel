@@ -27,8 +27,9 @@ version = 1.0
 # (str) The main entry point of your application (Uses the Kivy file)
 source.entrypoint = mobile_app.py
 
-# (list) Application requirements (CRITICAL FIX: Forced Python 3.11 for stability)
-requirements = python3==3.11,kivy,pillow
+# (list) Application requirements
+# CRITICAL FIX: Pinning both python3 and hostpython3 to 3.11 to match the Docker image.
+requirements = python3==3.11,hostpython3==3.11,kivy,pillow
 
 # (str) Icon of the application (Points to your logo)
 icon.filename = %(source.dir)s/icon.png
