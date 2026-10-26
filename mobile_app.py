@@ -48,22 +48,9 @@ class GameScreen(Screen):
             self.bg_music.loop = True
             self.bg_music.play()
         
-        # FloatLayout allows overlapping widgets (Background, Characters, Text)
         root = FloatLayout()
         
-        # --- 1. BACKGROUND ---
-        # Uncomment and change the path when you are ready
-        # bg_img = Image(source='assets/backgrounds/castle.jpg', allow_stretch=True, keep_ratio=False, size_hint=(1, 1))
-        # root.add_widget(bg_img)
-        
-        # --- 2. CHARACTERS ---
-        # Uncomment and change the paths when you are ready
-        # char_layout = BoxLayout(size_hint=(1, 0.6), pos_hint={'center_x': 0.5, 'y': 0.2})
-        # char_layout.add_widget(Image(source='assets/sprites/mika.png', allow_stretch=True, keep_ratio=True))
-        # root.add_widget(char_layout)
-        
-        # --- 3. DIALOGUE BOX ---
-        # Anchored to the bottom, taking up 35% of the screen
+        # --- DIALOGUE BOX ---
         dialogue_box = BoxLayout(
             orientation='vertical', 
             size_hint=(1, 0.35), 
@@ -79,7 +66,7 @@ class GameScreen(Screen):
             size_hint_y=0.8,
             font_size='16sp'
         )
-        # CRITICAL: Forces the text to wrap to the next line on mobile screens
+        # Forces the text to wrap to the next line on mobile screens
         self.dialogue_label.bind(size=self.dialogue_label.setter('text_size'))
         
         dialogue_box.add_widget(self.dialogue_label)
