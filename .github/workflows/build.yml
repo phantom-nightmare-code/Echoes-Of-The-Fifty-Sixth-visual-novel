@@ -14,12 +14,17 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 1. Clear the broken cache that contains Python 3.14 files
+    # --- NEW STEP: Download p4a locally ---
+    - name: Clone python-for-android (develop branch)
+      run: |
+        git clone https://github.com/kivy/python-for-android.git --branch develop --single-branch p4a
+        # Fix the liblzma version in the local clone
+        sed -i 's/version = .*/version = 5.4.4/' p4a/pythonforandroid/recipes/liblzma/__init__.py
+
     - name: Clear Broken Buildozer Cache
       run: |
         rm -rf ~/.buildozer
 
-    # 2. Cache the Android SDK and NDK for future fast builds
     - name: Cache Buildozer global directory
       uses: actions/cache@v4
       with:
@@ -28,7 +33,6 @@ jobs:
         restore-keys: |
           buildozer-global-
 
-    # 3. Cache Gradle dependencies
     - name: Cache Gradle dependencies
       uses: actions/cache@v4
       with:
@@ -37,16 +41,15 @@ jobs:
         restore-keys: |
           gradle-
 
-    # 4. Build using the stable 1.5.0 Docker image (not the buggy 'latest' one)
+    # --- MODIFIED STEP: Tell buildozer to use the local p4a ---
     - name: Build with Buildozer (Stable Docker Image)
       run: |
         docker run --rm \
           -v "${{ github.workspace }}":/home/user/hostcwd \
           -v "$HOME/.buildozer":/home/user/.buildozer \
           kivy/buildozer:1.5.0 \
-          android debug
+          /bin/bash -c "buildozer android debug --p4a-dir=/home/user/hostcwd/p4a"
 
-    # 5. Upload the finished APK
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
