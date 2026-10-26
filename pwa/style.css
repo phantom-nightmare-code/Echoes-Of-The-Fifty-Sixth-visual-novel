@@ -1,0 +1,31 @@
+:root {
+  color-scheme: dark;
+  font-family: Georgia, "Times New Roman", serif;
+  background: #080b10;
+  color: #f3eee5;
+  --gold: #c4a879;
+  --panel: #101722;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; padding: 1rem; }
+header { text-align: center; margin: .5rem auto 1rem; }
+h1 { color: #f5e9d2; font-size: clamp(1.35rem, 4vw, 2rem); margin: 0; }
+header p { color: var(--gold); margin: .35rem 0; }
+main { max-width: 900px; margin: 0 auto; }
+button {
+  width: 100%; min-height: 48px; margin: .35rem 0; padding: .75rem 1rem;
+  border: 1px solid var(--gold); border-radius: 8px; background: var(--panel);
+  color: #f3eee5; font: inherit; text-align: left; cursor: pointer;
+}
+button:disabled { opacity: .4; cursor: not-allowed; }
+.hero { width: 100%; max-height: 36vh; object-fit: cover; border-radius: 12px; }
+.cast { display: flex; align-items: end; justify-content: center; gap: .5rem; height: 30vh; }
+.cast img { max-width: 45%; height: 100%; object-fit: contain; }
+.scene-title { color: var(--gold); text-transform: uppercase; letter-spacing: .1em; }
+.dialogue { background: #06080af0; border: 1px solid var(--gold); border-radius: 12px; padding: 1rem; }
+.speaker { color: #d9bd82; font-weight: bold; }
+.dialogue p { line-height: 1.65; }
+.arc { color: var(--gold); margin: 1rem 0 .25rem; }
+.actions { display: flex; gap: .5rem; }
+.actions button { text-align: center; }

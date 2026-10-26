@@ -1,3 +1,5 @@
 pyinstaller>=6.0,<7.0
 pygame>=2.6,<3.0
 pyttsx3>=2.90,<3.0
+Pillow>=10.0,<12.0
+streamlit>=1.50,<2.0
