@@ -91,8 +91,6 @@ class GameScreen(Screen):
             background_color=(0.2, 0.2, 0.2, 1),
             font_size='18sp'
         )
-        # You can bind the button to a function to change text/characters later
-        # self.continue_btn.bind(on_release=self.next_line) 
         
         dialogue_box.add_widget(self.continue_btn)
         
