@@ -12,19 +12,19 @@ package.domain = org.phantomnightmare
 # (str) Source code where the main.py live
 source.dir = .
 
-# (list) Source files to include (CRITICAL: Includes audio and fonts)
+# (list) Source files to include (CRITICAL: Includes audio extensions)
 source.include_exts = py,png,jpg,kv,atlas,json,ogg,mp3,wav,ttf
 
 # (list) Source files to exclude
 source.exclude_exts = spec
 
-# (list) List of directory to exclude (CRITICAL: Removed assets/chapter_music from this list)
+# (list) List of directory to exclude (CRITICAL: Removed assets/chapter_music so it gets included)
 source.exclude_dirs = .git,.venv,venv,build,dist,__pycache__
 
-# (str) Application versioning (method 1)
+# (str) Application versioning
 version = 1.0
 
-# (str) The main entry point of your application (CRITICAL: Uses the Kivy file, not Tkinter)
+# (str) The main entry point of your application (CRITICAL: Uses the Kivy file)
 source.entrypoint = mobile_app.py
 
 # (list) Application requirements
@@ -38,6 +38,9 @@ orientation = portrait
 
 # (bool) Indicate if the application should be fullscreen
 fullscreen = 1
+
+# (bool) Automatically accept Android SDK licenses
+android.accept_sdk_license = True
 
 # (list) Permissions
 android.permissions = INTERNET
@@ -54,8 +57,11 @@ android.ndk = 25b
 # (str) Android NDK API to use
 android.ndk_api = 21
 
-# (bool) Use --private data storage (True) or --dir public storage (False)
+# (bool) Use --private data storage
 android.private_storage = True
 
 # (str) Android entry point
 android.entrypoint = org.kivy.android.PythonActivity
+
+# (str) python-for-android branch to use
+p4a.branch = master
