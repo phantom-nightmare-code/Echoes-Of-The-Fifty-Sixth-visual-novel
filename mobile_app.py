@@ -41,13 +41,14 @@ class GameScreen(Screen):
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
         
-        # Start background music
-        # IMPORTANT: Change this path to match your exact music file!
-        self.bg_music = SoundLoader.load('assets/chapter_music/your_song_name.ogg') 
-        if self.bg_music:
-            self.bg_music.loop = True
-            self.bg_music.play()
+        # --- MUSIC & STORY STATE ---
+        self.current_music = None
+        self.current_chapter = 1  # Start at Chapter 1
         
+        # Play the initial music track
+        self.play_music(self.current_chapter)
+
+        # --- LAYOUT ---
         root = FloatLayout()
         
         # --- DIALOGUE BOX ---
@@ -71,7 +72,7 @@ class GameScreen(Screen):
         
         dialogue_box.add_widget(self.dialogue_label)
         
-        # Continue Button
+        # --- CONTINUE BUTTON ---
         self.continue_btn = Button(
             text="Continue", 
             size_hint_y=0.2, 
@@ -79,10 +80,57 @@ class GameScreen(Screen):
             font_size='18sp'
         )
         
+        # When clicked, trigger the next_chapter function
+        self.continue_btn.bind(on_release=self.next_chapter)
+        
         dialogue_box.add_widget(self.continue_btn)
         
         root.add_widget(dialogue_box)
         self.add_widget(root)
+
+    def next_chapter(self, instance):
+        # Check if we have reached the last chapter
+        if self.current_chapter < 34:
+            self.current_chapter += 1
+            self.play_music(self.current_chapter)
+            print(f"Advanced to Chapter {self.current_chapter}")
+            
+            # Optional: Update the text on screen to show progress
+            self.dialogue_label.text = f"NARRATION\n\nYou have advanced to Chapter {self.current_chapter}.\n\n(Music has automatically changed to the next track)."
+        else:
+            print("You have reached the end of Chapter 34!")
+
+    def play_music(self, chapter_number):
+        # 1. Stop and unload currently playing music to save phone RAM
+        if self.current_music:
+            self.current_music.stop()
+            self.current_music.unload()
+            self.current_music = None
+            
+        # 2. Format chapter number (e.g., 1 becomes "01", 34 becomes "34")
+        chapter_str = f"{chapter_number:02d}"
+        
+        # 3. Check for .mp3 first, then .wav
+        base_path = os.path.join('assets', 'chapter_music')
+        mp3_path = os.path.join(base_path, f'chapter_{chapter_str}.mp3')
+        wav_path = os.path.join(base_path, f'chapter_{chapter_str}.wav')
+        
+        final_path = None
+        
+        if os.path.exists(mp3_path):
+            final_path = mp3_path
+        elif os.path.exists(wav_path):
+            final_path = wav_path
+            
+        # 4. Load and play
+        if final_path:
+            print(f"Loading Music: {final_path}")
+            self.current_music = SoundLoader.load(final_path)
+            if self.current_music:
+                self.current_music.loop = True
+                self.current_music.play()
+        else:
+            print(f"Error: Could not find music for chapter {chapter_number} (Tried .mp3 and .wav)")
 
 class EchoesApp(App):
     def build(self):
