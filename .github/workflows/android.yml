@@ -18,6 +18,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /main.py
+            /game_session.py
+            /mobile_app.py
+            /buildozer.spec
+            /assets/backgrounds/
+            /assets/characters/
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
