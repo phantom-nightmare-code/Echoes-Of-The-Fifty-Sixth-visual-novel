@@ -18,20 +18,20 @@ source.include_exts = py,png,jpg,kv,atlas,json,ogg,mp3,wav,ttf
 # (list) Source files to exclude
 source.exclude_exts = spec
 
-# (list) List of directory to exclude (Removed assets/chapter_music so it gets included)
+# (list) List of directory to exclude
 source.exclude_dirs = .git,.venv,venv,build,dist,__pycache__
 
 # (str) Application versioning
 version = 1.0
 
-# (str) The main entry point of your application (Uses the Kivy file)
+# (str) The main entry point of your application
 source.entrypoint = mobile_app.py
 
 # (list) Application requirements
-# CRITICAL FIX: Pinning both python3 and hostpython3 to 3.11 to match the Docker image.
-requirements = python3==3.11,hostpython3==3.11,kivy,pillow
+# CRITICAL FIX: Removed explicit version pinning to let Buildozer use the Docker image's default Python.
+requirements = python3,kivy,pillow
 
-# (str) Icon of the application (Points to your logo)
+# (str) Icon of the application
 icon.filename = %(source.dir)s/icon.png
 
 # (str) Supported orientation
@@ -65,4 +65,5 @@ android.private_storage = True
 android.entrypoint = org.kivy.android.PythonActivity
 
 # (str) python-for-android branch to use
-p4a.branch = master
+# CRITICAL FIX: Using 'develop' to get the latest dependency download fixes.
+p4a.branch = develop
