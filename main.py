@@ -22,6 +22,13 @@ try:
 except ImportError:
     HAS_PIL = False
 
+try:
+    import tkinter as tk
+    from tkinter import messagebox
+    HAS_TK = True
+except ImportError:
+    HAS_TK = False
+
 APP_NAME = "Echoes of the Fifty Six Worlds"
 SUBTITLE = "Requiem of the Maid"
 SAVE_VERSION = 6
@@ -1853,8 +1860,8 @@ def validate_story() -> int:
 
 class VisualNovel:
     def __init__(self) -> None:
-        import tkinter as tk
-        from tkinter import messagebox
+        if not HAS_TK:
+            raise RuntimeError("tkinter is not available on this platform. Use mobile_app.py on Android.")
         self.tk = tk; self.messagebox = messagebox
         self.root = tk.Tk(); self.root.title(APP_NAME); self.root.geometry("1100x740"); self.root.minsize(820, 600)
         self.canvas = tk.Canvas(self.root, bg="#06080a", highlightthickness=0); self.canvas.pack(fill="both", expand=True)
@@ -2815,7 +2822,7 @@ def main():
 if __name__ == "__main__":
     if os.environ.get("ANDROID_ARGUMENT"):
         sys.modules.setdefault("main", sys.modules[__name__])
-        from mobile_app import AndroidNovelApp
-        AndroidNovelApp().run()
+        from mobile_app import EchoesApp
+        EchoesApp().run()
     else:
         raise SystemExit(main())
