@@ -1,23 +1,70 @@
 [app]
+
+# (str) Title of your application
 title = Echoes Of The Fifty-Sixth
+
+# (str) Package name (must be lowercase, no spaces)
 package.name = echoes56
+
+# (str) Package domain (needs to be a valid reverse domain name)
 package.domain = org.phantomnightmare
+
+# (str) Source code where the main.py lives
 source.dir = .
-source.entrypoint = mobile_app.py # Change to main.py if that is your entry file
+
+# (str) The main entry point of your application
+source.entrypoint = main.py
+
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas,json,ogg,mp3,wav,ttf
+
+# (list) Pattern to exclude from the source directory
 source.exclude_patterns = __pycache__, *.pyc, *.spec, *.md, .git*, .github*, venv*, build*, dist*
+
+# (str) Application versioning
 version = 1.0.0
-requirements = python3==3.11.10,hostpython3==3.11.10,kivy,pillow
+
+# (list) Application requirements
+requirements = python3,kivy,pillow
+
+# (str) Icon of the application
 icon.filename = %(source.dir)s/icon.png
+
+# (str) Supported orientation
 orientation = portrait
+
+# (bool) Indicate if the application should be fullscreen
 fullscreen = 1
+
+# (list) Permissions
 android.permissions = INTERNET
-android.api = 33
+
+# (int) Target Android API
+android.api = 31
+
+# (int) Minimum API
 android.minapi = 21
-android.ndk = 23b
+
+# (str) Android NDK version to use
+android.ndk = 25b
+
+# (int) Android NDK API
 android.ndk_api = 21
+
+# (bool) Automatically accept SDK license agreements
 android.accept_sdk_license = True
+
+# (bool) Enable AndroidX support
 android.enable_androidx = True
+
+# (str) Android entry point
 android.entrypoint = org.kivy.android.PythonActivity
+
+# (str) python-for-android branch
 p4a.branch = develop
+
+# (str) The Android arch to build for.
 android.archs = arm64-v8a
+
+# Logging level (2 = debug — essential for seeing Python tracebacks in `adb logcat`)
+log_level = 2
