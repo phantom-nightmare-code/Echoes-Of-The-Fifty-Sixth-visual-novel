@@ -16,22 +16,23 @@ source.dir = .
 source.entrypoint = main.py
 
 # (list) Source files to include
-source.include_exts = py,png,jpg,kv,atlas,json,ogg,mp3,wav,ttf
+source.include_exts = py,png,jpg,jpeg,kv,atlas,json,ogg,mp3,wav,ttf
 
 # (list) Pattern to exclude from the source directory
-source.exclude_patterns = __pycache__, *.pyc, *.spec, *.md, .git*, .github*, venv*, build*, dist*
+source.exclude_patterns = __pycache__, *.pyc, *.spec, *.md, .git*, .github*, venv*, build*, dist*, .buildozer*
 
 # (str) Application versioning
 version = 1.0.0
 
 # (list) Application requirements
-requirements = python3,kivy,pillow
+# Stable pins to prevent C-compilation crashes.
+requirements = python3, kivy, pillow
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/icon.png
 
 # (str) Supported orientation
-orientation = portrait
+orientation = all
 
 # (bool) Indicate if the application should be fullscreen
 fullscreen = 1
@@ -40,12 +41,13 @@ fullscreen = 1
 android.permissions = INTERNET
 
 # (int) Target Android API
-android.api = 31
+android.api = 34
 
 # (int) Minimum API
 android.minapi = 21
 
 # (str) Android NDK version to use
+# NDK 25b is now the minimum required version.
 android.ndk = 25b
 
 # (int) Android NDK API
@@ -61,10 +63,10 @@ android.enable_androidx = True
 android.entrypoint = org.kivy.android.PythonActivity
 
 # (str) python-for-android branch
-p4a.branch = develop
+p4a.branch = master
 
 # (str) The Android arch to build for.
 android.archs = arm64-v8a
 
-# Logging level (2 = debug — essential for seeing Python tracebacks in `adb logcat`)
+# (str) Logging level (2 = debug, shows python tracebacks in the terminal)
 log_level = 2
