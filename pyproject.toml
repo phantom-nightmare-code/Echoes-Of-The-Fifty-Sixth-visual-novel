@@ -1,0 +1,14 @@
+[tool.briefcase]
+project_name = "Echoes of the Fifty Six Worlds"
+bundle = "org.phantomnightmare"
+version = "0.0.1"
+
+[tool.briefcase.app.echoes56]
+formal_name = "Echoes of the Fifty Six Worlds"
+description = "A visual novel."
+sources = ["main.py", "mobile_app.py", "assets"]
+requires = ["kivy"]
+
+[tool.briefcase.app.echoes56.android]
+build_backend = "briefcase_p4a_backend"  # This is the key line
+android_sdk_version = "34"
