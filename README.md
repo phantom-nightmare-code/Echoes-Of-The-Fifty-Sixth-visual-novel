@@ -8,7 +8,7 @@ The original `assets\The Maid of Light.mp3` soundtrack and lyrics were created b
 
 A prebuilt Windows app is available from the [latest GitHub release](https://github.com/phantom-nightmare-code/fifty-six-lives-visual-novel/releases/latest).
 
-The story has six title arcs and 29 selectable chapters. Chapters unlock as you play and unlocked chapters can be replayed. One chapter explores Mika's despair when she returns and discovers Mallory has asked Lira to serve as her new maid.
+The story has six title arcs and 34 selectable chapters. Chapters unlock as you play and unlocked chapters can be replayed. One chapter explores Mika's despair when she returns and discovers Mallory has asked Lira to serve as her new maid.
 
 ## Web app
 
@@ -33,16 +33,16 @@ The **Deploy installable web app** GitHub Actions workflow builds and publishes 
 
 ## Android app
 
-The Android edition is a separate Kivy app with chapter progression and a local save. It uses the character and background artwork but omits the desktop edition's music, voice-over, and sound effects. Build a debug APK on Linux or WSL after installing Buildozer:
+The Android edition is a touch-friendly Kivy port of the branching story. It includes chapter selection, three local save slots, chapter music, generated character voice effects, and auto-play and skip controls. Build a debug APK on Linux or WSL after installing Buildozer:
 
 ```bash
 python -m pip install buildozer cython==0.29.36
 buildozer android debug
 ```
 
-The Buildozer configuration pins python-for-android to the upstream change that supports Android-tagged Python wheels such as `charset-normalizer`.
+The first build downloads the Android SDK and NDK and can take a while. Chapter soundtracks are bundled with the app, so the APK is large. The generated APK is written to `bin/`.
 
-Alternatively, after pushing the project to GitHub, run **Build Android APK** from the repository's Actions tab and download the generated APK artifact. A release APK intended for public distribution should be signed with your Android signing key.
+Alternatively, push changes to `main` or `master` to run **Build Android APK** in GitHub Actions, then download the APK from that workflow run's artifacts. A release APK intended for public distribution should be signed with your Android signing key.
 
 ## Run from source
 
@@ -65,7 +65,7 @@ On Windows, offline speech uses installed SAPI voices. If compatible speech voic
 
 1. Install Python 3.10 or newer.
 2. Double-click `build_windows.bat`, or run it from PowerShell.
-3. When it finishes, share `dist\Echoes of the Fifty Six Worlds - Requiem of the Maid.exe`. The supplied game icon appears on the app window and executable. The title soundtrack, game icon, and all 29 chapter tracks are bundled into the executable; characters and original scenery are drawn by the game. The recipient does not need Python installed or a separate assets folder. The original-quality WAV chapter tracks make the executable approximately 600 MB larger than the earlier release.
+3. When it finishes, share `dist\Echoes of the Fifty Six Worlds - Requiem of the Maid.exe`. The supplied game icon appears on the app window and executable. The title soundtrack, game icon, and all 34 chapter tracks are bundled into the executable; characters and original scenery are drawn by the game. The recipient does not need Python installed or a separate assets folder. The original-quality WAV chapter tracks make the executable approximately 720 MiB (750 MB).
 
 The first build needs an internet connection to install PyInstaller. For a distributable release, zip the `.exe` and include this README. Windows SmartScreen may show a warning for an unsigned app; code signing is optional and requires a certificate.
 
